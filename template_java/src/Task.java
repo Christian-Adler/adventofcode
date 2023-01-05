@@ -27,9 +27,9 @@ public class Task {
         String result = input;
         for (int i = 0; i < strings.length; i++) {
             String string = strings[i];
-            input = input.replace(string, "");
+            result = result.replace(string, "");
         }
-        return input;
+        return result;
     }
 
     @Override
