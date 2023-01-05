@@ -13,12 +13,14 @@ public class Task {
     public void afterParse() {
     }
 
-    public void out(Object str) {
-        System.out.println(str);
-    }
-
-    public void ou(Object str) {
-        System.out.print(str);
+     public void out(Object... str) {
+        String out = "";
+        for (Object o : str) {
+            if (out.length() > 0)
+                out += " ";
+            out += o;
+        }
+        System.out.println(out);
     }
 
     String cleanFrom(String input, String... strings) {
