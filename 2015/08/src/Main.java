@@ -5,7 +5,8 @@ import java.nio.file.Files;
 public class Main {
     public static void main(String[] args) throws IOException {
 //        runForInput("./input_0.txt");
-        runForInput("./input_1.txt");
+//        runForInput("./input_1.txt");
+        runForInput("./input_rk.txt");
     }
 
     private static void runForInput(String inputFileName) throws IOException {
