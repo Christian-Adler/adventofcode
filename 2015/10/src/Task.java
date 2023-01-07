@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class Task {
 
     public void init() {
@@ -8,7 +6,10 @@ public class Task {
     public void addLine(String input) {
         String act = input;
         for (int i = 0; i < 40; i++) {
+            long t1 = System.currentTimeMillis();
             act = lookAndSay(act);
+            long t2 = System.currentTimeMillis();
+            out(t2 - t1, "ms");
 
         }
         out(act.length());
@@ -16,32 +17,26 @@ public class Task {
 
     private String lookAndSay(String input) {
         String result = "";
-        ArrayList<String> list = Util.str2List(input);
-//        out(list);
 
-        String prevC = "_";
-        for (int i = 0; i < list.size(); i++) {
-            String c = list.get(i);
-            if (prevC.equals(c))
-                continue;
-            prevC = c;
-            int sequence = numSequence(i, list);
-            result += sequence + c;
+        int sayCounter = 0;
+        char prevC = input.charAt(0);
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (prevC == c) {
+                sayCounter++;
+            } else {
+                result += String.valueOf(sayCounter) + String.valueOf(prevC);
+                sayCounter = 1;
+                prevC = c;
+            }
         }
+        result += String.valueOf(sayCounter) + String.valueOf(prevC);
 
 //        out(result);
         return result;
     }
 
-    int numSequence(int idx, ArrayList<String> list) {
-        String c = list.get(idx);
-        int i = idx + 1;
-        while (i < list.size()) {
-            if (!list.get(i).equals(c)) break;
-            i++;
-        }
-        return i - idx;
-    }
 
     public void afterParse() {
     }

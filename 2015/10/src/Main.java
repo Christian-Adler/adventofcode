@@ -11,8 +11,8 @@ public class Main {
     private static void runForInput(String inputFileName) throws IOException {
         System.out.println("\r\nInput: " + inputFileName);
 
-//        Task task = new Task();
-        Task2 task = new Task2();
+        Task task = new Task();
+//        Task2 task = new Task2();
         task.init();
 
         long t1 = System.currentTimeMillis();
