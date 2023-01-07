@@ -1,37 +1,43 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Task {
 
     public void init() {
     }
 
     public void addLine(String input) {
-        String act = input;
-        for (int i = 0; i < 40; i++) {
-            long t1 = System.currentTimeMillis();
-            act = lookAndSay(act);
-            long t2 = System.currentTimeMillis();
-            out(t2 - t1, "ms");
-
+        List<Integer> act = new ArrayList<>();
+        for (int i = 0; i < input.length(); i++) {
+            act.add(Integer.parseInt(input.substring(i, i + 1)));
         }
-        out(act.length());
+
+        for (int i = 0; i < 50; i++) {
+            act = lookAndSay(act);
+        }
+        out(act.size());
     }
 
-    private String lookAndSay(String input) {
-        String result = "";
+    private List<Integer> lookAndSay(List<Integer> input) {
+        List<Integer> result = new ArrayList<>();
 
         int sayCounter = 0;
-        char prevC = input.charAt(0);
+        int prevC = input.get(0);
 
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
+        for (int i = 0; i < input.size(); i++) {
+            int c = input.get(i);
             if (prevC == c) {
                 sayCounter++;
             } else {
-                result += String.valueOf(sayCounter) + String.valueOf(prevC);
+                result.add(sayCounter);
+                result.add(prevC);
+
                 sayCounter = 1;
                 prevC = c;
             }
         }
-        result += String.valueOf(sayCounter) + String.valueOf(prevC);
+        result.add(sayCounter);
+        result.add(prevC);
 
 //        out(result);
         return result;
