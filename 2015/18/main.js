@@ -1,4 +1,4 @@
-import {out, string2Array, string2SplitLinesArray} from "./util.js";
+import {hslToRgbStr, out, string2Array, string2SplitLinesArray} from "./util.js";
 import {input0, input1} from "./input.js";
 import {Pos} from "./pos.js";
 import {Svg} from "./svg.js";
@@ -6,6 +6,7 @@ import {Svg} from "./svg.js";
 const useExample = 0;
 
 const grid = new Map();
+const activeSinceStep = new Map();
 
 const input = (useExample ? input0 : input1);
 const animate = 1;
@@ -39,8 +40,10 @@ const task1 = () => {
     if (useTask2)
         activateCorners();
 
+    updateActiveSince(0);
+
     // out(grid);
-    gridToSvg();
+    gridToSvg(0);
 
     let count = 0;
 
@@ -52,7 +55,8 @@ const task1 = () => {
                 return;
             }
             nextStep();
-            gridToSvg();
+            updateActiveSince(count);
+            gridToSvg(count);
 
         }, animateDelay);
     } else {
@@ -106,10 +110,50 @@ function nextStep() {
         activateCorners();
 }
 
-function gridToSvg() {
+function updateActiveSince(step) {
+    const nextActive = [];
+    for (let y = yMin; y <= yMax; y++) {
+        for (let x = xMin; x <= xMax; x++) {
+            const pos = new Pos(x, y);
+
+            if (grid.has(pos.toString())) // an?
+            {
+                if (!activeSinceStep.has(pos.toString()))
+                    nextActive.push(pos);
+            } else
+                activeSinceStep.delete(pos.toString());
+        }
+    }
+
+    for (const active of nextActive) {
+        activeSinceStep.set(active.toString(), step);
+    }
+}
+
+function gridToSvg(actStep) {
+    const startL = 20;
+    const endL = 50;
+    const startS = 20;
+    const endS = 100;
+    const startH = 260;
+    const endH = 70;
+
+    const steps = actStep; // maxCount; // Anzahl schritte aus Task...
+
+    const stepL = (endL - startL) / steps;
+    const stepS = (endS - startS) / steps;
+    const stepH = (endH - startH) / steps;
+
+
     const svg = new Svg();
     for (const active of grid.values()) {
-        svg.add(active, '#ff0000');
+        const activeSince = activeSinceStep.get(active.toString());
+        const h = startH + activeSince * stepH;
+        const s = startS + activeSince * stepS;
+        const l = startL + activeSince * stepL;
+        let rgb = hslToRgbStr(h, s, l);
+
+        svg.add(active, rgb);
     }
     svg.setMinMax(xMin, xMax, yMin, yMax);
     // document.getElementById('out').innerHTML = svg.toSVGStringAged();
