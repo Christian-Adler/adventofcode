@@ -152,10 +152,10 @@ public class Task {
             if (count > 2 && player.equals(p) && boss.equals(b))
                 throw new IllegalArgumentException("there is never a winner");
 
-            boss.hitPoints -= Math.max(0, player.damage - boss.armor);
+            boss.hitPoints -= Math.max(1, player.damage - boss.armor);
             if (boss.hitPoints <= 0)
                 return true;
-            player.hitPoints -= Math.max(0, boss.damage - player.armor);
+            player.hitPoints -= Math.max(1, boss.damage - player.armor);
             if (player.hitPoints <= 0)
                 return false;
         }
