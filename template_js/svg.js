@@ -47,12 +47,15 @@ export class Svg {
         let count = 0;
 
         for (const pos of this.posMap.values()) {
-            const h = startH + count * stepH;
-            const s = startS + count * stepS;
-            const l = startL + count * stepL;
-            let rgb = hslToRgbStr(h, s, l);
-            if (pos.x === 0 && pos.y === 0)
-                rgb = '#ff0000';
+            let rgb = pos.color;
+            if (!rgb) {
+                const h = startH + count * stepH;
+                const s = startS + count * stepS;
+                const l = startL + count * stepL;
+                rgb = hslToRgbStr(h, s, l);
+                // if (pos.x === 0 && pos.y === 0)
+                //     rgb = '#ff0000';
+            }
             count++;
             res += "<rect style=\"fill:" + rgb + ";\" width=\"1\" height=\"1\" x=\"" + (pos.x - this.xMin) + "\" y=\"" + (pos.y - this.yMin) + "\" />\r\n";
         }
@@ -69,7 +72,8 @@ export class Svg {
         res += "<rect style=\"fill:#000000;\" width=\"" + (this.xMax - this.xMin + 3) + "\" height=\"" + (this.yMax - this.yMin + 3) + "\" x=\"0\" y=\"0\" />\r\n";
         res += "<g transform=\"translate(1,1)\">\r\n";
         for (const pos of this.posMap.values()) {
-            res += "<rect style=\"fill:" + pos.color + ";\" width=\"1\" height=\"1\" x=\"" + (pos.x - this.xMin) + "\" y=\"" + (pos.y - this.yMin) + "\" />\r\n";
+            let color = pos.color || '#ff0000';
+            res += "<rect style=\"fill:" + color + ";\" width=\"1\" height=\"1\" x=\"" + (pos.x - this.xMin) + "\" y=\"" + (pos.y - this.yMin) + "\" />\r\n";
         }
         res += "</g>\r\n";
         res += "</svg>\r\n";
