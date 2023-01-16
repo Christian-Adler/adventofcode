@@ -2,12 +2,13 @@ import {Pos} from "./pos.js";
 import {hslToRgbStr} from "./util.js";
 
 export class Svg {
-    constructor() {
+    constructor(zoomFactor) {
         this.xMin = Number.MAX_SAFE_INTEGER;
         this.xMax = Number.MIN_SAFE_INTEGER;
         this.yMin = Number.MAX_SAFE_INTEGER;
         this.yMax = Number.MIN_SAFE_INTEGER;
         this.posMap = new Map();
+        this.zoomFactor = typeof zoomFactor === 'number' ? zoomFactor : 1;
     }
 
     add(pos, color) {
@@ -38,11 +39,7 @@ export class Svg {
         const stepH = (endH - startH) / steps;
 
 
-        let res = '\r\n';
-
-        res += "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + (this.xMax - this.xMin + 3) + "\" height=\"" + (this.yMax - this.yMin + 3) + "\">\r\n";
-        res += "<rect style=\"fill:#000000;\" width=\"" + (this.xMax - this.xMin + 3) + "\" height=\"" + (this.yMax - this.yMin + 3) + "\" x=\"0\" y=\"0\" />\r\n";
-        res += "<g transform=\"translate(1,1)\">\r\n";
+        let xml = this.svgHead();
 
         let count = 0;
 
@@ -57,27 +54,34 @@ export class Svg {
                 //     rgb = '#ff0000';
             }
             count++;
-            res += "<rect style=\"fill:" + rgb + ";\" width=\"1\" height=\"1\" x=\"" + (pos.x - this.xMin) + "\" y=\"" + (pos.y - this.yMin) + "\" />\r\n";
+            xml += "<rect style=\"fill:" + rgb + ";\" width=\"" + this.zoomFactor + "\" height=\"" + this.zoomFactor + "\" x=\"" + (pos.x - this.xMin) * this.zoomFactor + "\" y=\"" + (pos.y - this.yMin) * this.zoomFactor + "\" />\r\n";
         }
-        res += "</g>\r\n";
-        res += "</svg>\r\n";
 
-        return res;
+        xml += this.svgTail();
+        return xml;
     }
 
     toSVGString() {
-        let res = '\r\n';
-
-        res += "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + (this.xMax - this.xMin + 3) + "\" height=\"" + (this.yMax - this.yMin + 3) + "\">\r\n";
-        res += "<rect style=\"fill:#000000;\" width=\"" + (this.xMax - this.xMin + 3) + "\" height=\"" + (this.yMax - this.yMin + 3) + "\" x=\"0\" y=\"0\" />\r\n";
-        res += "<g transform=\"translate(1,1)\">\r\n";
+        let xml = this.svgHead();
         for (const pos of this.posMap.values()) {
             let color = pos.color || '#ff0000';
-            res += "<rect style=\"fill:" + color + ";\" width=\"1\" height=\"1\" x=\"" + (pos.x - this.xMin) + "\" y=\"" + (pos.y - this.yMin) + "\" />\r\n";
+            xml += "<rect style=\"fill:" + color + ";\" width=\"" + this.zoomFactor + "\" height=\"" + this.zoomFactor + "\" x=\"" + (pos.x - this.xMin) * this.zoomFactor + "\" y=\"" + (pos.y - this.yMin) * this.zoomFactor + "\" />\r\n";
         }
-        res += "</g>\r\n";
-        res += "</svg>\r\n";
+        xml += this.svgTail();
+        return xml;
+    }
 
+    svgTail() {
+        let res = "</g>\r\n";
+        res += "</svg>\r\n";
+        return res;
+    }
+
+    svgHead() {
+        let res = '\r\n';
+        res += "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" + (this.xMax - this.xMin + 3) * this.zoomFactor + "\" height=\"" + (this.yMax - this.yMin + 3) * this.zoomFactor + "\">\r\n";
+        res += "<rect style=\"fill:#000000;\" width=\"" + (this.xMax - this.xMin + 3) * this.zoomFactor + "\" height=\"" + (this.yMax - this.yMin + 3) * this.zoomFactor + "\" x=\"0\" y=\"0\" />\r\n";
+        res += "<g transform=\"translate(" + this.zoomFactor + "," + this.zoomFactor + ")\">\r\n";
         return res;
     }
 }
