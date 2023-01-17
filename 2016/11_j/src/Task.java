@@ -50,9 +50,9 @@ public class Task {
         }
 
 
-        out(floors);
-
-        workList.add(new WorkItem(0, floors, 0));
+        WorkItem initialWorkItem = new WorkItem(0, floors, 0);
+        printFloors(initialWorkItem);
+        workList.add(initialWorkItem);
 
         long turns = 0;
         while (!workList.isEmpty()) {
@@ -70,12 +70,12 @@ public class Task {
     }
 
     void minMoves(WorkItem workItem) {
-//        printFloors(workItem);
+        //        printFloors(workItem);
 
         if (minSteps <= workItem.soFarSteps())
             return;
-//        if (!checkValidity(workItem.floors())) // wird schon beim hinzufuegen geprueft.
-//            return;
+        //        if (!checkValidity(workItem.floors())) // wird schon beim hinzufuegen geprueft.
+        //            return;
 
         ArrayList<ArrayList<Device>> flrs = workItem.floors();
         int elevator = workItem.elevator();
@@ -122,8 +122,6 @@ public class Task {
         }
     }
 
-
-    long workItemCounter = 0;
 
     ArrayList<ArrayList<Device>> getCombinations(ArrayList<Device> flr) {
         ArrayList<ArrayList<Device>> result = new ArrayList<>();
@@ -176,18 +174,18 @@ public class Task {
 
     /**
      * Hint from Internet.
-     * Nur die Verteilung pro Zeile spielt eine Rolle - nicht die eigentlichen Elemente
+     * Nur die Verteilung pro Zeile spielt eine Rolle - nicht die eigentlichen Elemente. Welches Paerchen auf welchem Flur liegt ist egal.
      *
-     * @param workItem
-     * @return
+     * @param workItem zu hashendes WorkItem
+     * @return Hash-String
      */
     private String floorsHash(WorkItem workItem) {
         ArrayList<ArrayList<Device>> floors = workItem.floors();
         StringBuilder builder = new StringBuilder();
         builder.append(workItem.elevator());
         for (int i = floors.size() - 1; i >= 0; i--) {
-            ArrayList<Device> flr = floors.get(i);
             builder.append("_").append(i + 1).append("_");
+            ArrayList<Device> flr = floors.get(i);
 
             builder.append(flr.stream().filter(d -> d.type().equals(Type.microchip)).count());
             builder.append("-");

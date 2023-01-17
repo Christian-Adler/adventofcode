@@ -87,7 +87,8 @@ const task = (part2) => {
         addToFloor(firstFloor, device);
     }
 
-    // out(floors);
+    printFloors(floors, 1);
+
     elements = [...elementsSet];
     // out(elements);
     for (let i = 0; i < elements.length; i++) {
@@ -163,8 +164,8 @@ function minMoves({elevator, floors, soFarMoves, prevSteps}) {
     if (minSteps <= soFarMoves)
         return Number.MAX_SAFE_INTEGER;
 
-    if (!checkFloorValidity(floors))
-        return Number.MAX_SAFE_INTEGER;
+    // if (!checkFloorValidity(floors)) // wird schon beim Hinzufügen geprueft.
+    //     return Number.MAX_SAFE_INTEGER;
 
     let floorAsString = floorToString(floors, elevator);
     // if (prevSteps.includes(floorAsString))
@@ -218,11 +219,14 @@ function minMoves({elevator, floors, soFarMoves, prevSteps}) {
                 soFarMoves: soFarMoves + 1,
                 prevSteps: newPrevSteps
             };
-            const itemStrHash = floorToString(nextItem.floors, nextItem.elevator);
-            if (!alreadyInWork.has(itemStrHash)) {
-                alreadyInWork.add(itemStrHash);
-                // printFloors(nextItem.floors, elevatorMove);
-                workList.push(nextItem);
+
+            if (checkFloorValidity(nextItem.floors)) {
+                const itemStrHash = floorHash(nextItem.floors, nextItem.elevator);
+                if (!alreadyInWork.has(itemStrHash)) {
+                    alreadyInWork.add(itemStrHash);
+                    // printFloors(nextItem.floors, elevatorMove);
+                    workList.push(nextItem);
+                }
             }
         }
     }
@@ -267,6 +271,35 @@ function floorToString(floors, elevator) {
             if (floor.has(matchingGenerator))
                 res += ', ' + matchingGenerator;
         }
+    }
+    return res;
+}
+
+/**
+ * Hint from Internet.
+ * Nur die Verteilung pro Zeile spielt eine Rolle - nicht die eigentlichen Elemente. Welches Paerchen auf welchem Flur liegt ist egal.
+ *
+ * @param floors
+ * @param elevator
+ * @returns {string}
+ */
+function floorHash(floors, elevator) {
+    let res = '' + elevator;
+    for (let i = 1; i <= floors.size; i++) {
+        res += "_F" + i + '_';
+        const floor = floors.get(i);
+
+        let countMicro = 0;
+        let countGenerator = 0;
+        for (const element of elements) {
+            const chip = element + '-' + MICROCHIP;
+            if (floor.has(chip))
+                countMicro++;
+            const matchingGenerator = element + '-' + GENERATOR;
+            if (floor.has(matchingGenerator))
+                countGenerator++;
+        }
+        res += countMicro + '-' + countGenerator;
     }
     return res;
 }
@@ -316,6 +349,8 @@ function printSVG(elevator, floors) {
     document.getElementById('out').innerHTML = svg.toSVGString();
 }
 
-
-task();
-// task(true);
+const t1 = new Date();
+// task();
+task(true);
+const t2 = new Date();
+out(t2.getTime() - t1.getTime(), 'ms');
