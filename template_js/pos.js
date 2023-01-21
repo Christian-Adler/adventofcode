@@ -14,8 +14,25 @@ export class Pos {
         this.y += y;
     }
 
-    addToNewPos(x, y) {
+    addPos(other) {
+        this.x += other.x;
+        this.y += other.y;
+    }
+
+    addToNew(x, y) {
         return new Pos(this.x + x, this.y + y);
+    }
+
+    multToNew(x, y) {
+        return new Pos(this.x * x, this.y * y);
+    }
+
+    addPosToNew(other) {
+        return new Pos(this.x + other.x, this.y + other.y);
+    }
+
+    equals(other) {
+        return this.x === other.x && this.y === other.y;
     }
 }
 
