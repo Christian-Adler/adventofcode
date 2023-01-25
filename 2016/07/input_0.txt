@@ -2,3 +2,7 @@ abba[mnop]qrst
 abcd[bddb]xyyx
 aaaa[qwer]tyui
 ioxxoj[asdfgh]zxcvbn
+aba[bab]xyz
+aaa[kek]eke
+zazbz[bzb]cdb
+xyx[xyx]xyx
