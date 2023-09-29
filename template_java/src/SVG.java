@@ -149,9 +149,9 @@ public class SVG {
 
         float p = 2 * l - q;
 
-        int r = Math.round(Math.max(0, HueToRGB(p, q, h + (1.0f / 3.0f)) * 256));
-        int g = Math.round(Math.max(0, HueToRGB(p, q, h) * 256));
-        int b = Math.round(Math.max(0, HueToRGB(p, q, h - (1.0f / 3.0f)) * 256));
+        int r = Math.round(Math.min(255, Math.max(0, HueToRGB(p, q, h + (1.0f / 3.0f)) * 256)));
+        int g = Math.round(Math.min(255, Math.max(0, HueToRGB(p, q, h) * 256)));
+        int b = Math.round(Math.min(255, Math.max(0, HueToRGB(p, q, h - (1.0f / 3.0f)) * 256)));
 
         int[] array = {r, g, b};
         return array;
