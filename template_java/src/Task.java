@@ -24,4 +24,10 @@ public class Task {
            SVG svg = new SVG();
 		   return svg.toSVGStringAged();
     }
+	
+	
+    public String toStringConsole() {
+        SVG svg = new SVG();
+        return svg.toConsoleString();
+    }
 }

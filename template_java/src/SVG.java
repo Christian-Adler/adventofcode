@@ -26,6 +26,29 @@ public class SVG {
         positions.add(p);
     }
 
+    String toConsoleString() {
+        List<List<String>> console = new ArrayList<>();
+        for (int y = 0; y <= yMax - yMin; y++) {
+            List<String> row = new ArrayList<>();
+            console.add(row);
+            for (int x = 0; x <= xMax - xMin; x++) {
+                row.add(".");
+            }
+        }
+
+        for (Pos pos : positions) {
+            int yIdx = pos.y - this.yMin;
+            int xIdx = pos.x - this.xMin;
+            console.get(yIdx).set(xIdx, "#");
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (List<String> row : console) {
+            builder.append(String.join("", row)).append("\r\n");
+        }
+        return builder.toString();
+    }
+	
     String toSVGStringAged() {
         int startL = 40;
         int endL = 50;

@@ -22,7 +22,8 @@ public class Main {
         long t2 = System.currentTimeMillis();
 
 //        System.out.println(task);
-        System.out.println(task.toStringSVG());
+//        System.out.println(task.toStringSVG());		
+//        System.out.println(task.toStringConsole());
         System.out.println("Duration: " + (t2 - t1) + "ms");
     }
 
