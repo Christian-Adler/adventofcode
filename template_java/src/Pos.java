@@ -59,6 +59,10 @@ public class Pos {
     int manhattanDistance() {
         return Math.abs(x) + Math.abs(y);
     }
+	
+    int manhattanDistance(Pos other) {
+        return Math.abs(x - other.x) + Math.abs(y - other.y);
+    }
 
     List<Pos> pathBetween(Pos other) {
         List<Pos> path = new ArrayList<>();
