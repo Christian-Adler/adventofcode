@@ -43,8 +43,10 @@ public class SVG {
         }
 
         StringBuilder builder = new StringBuilder();
-        for (List<String> row : console) {
-            builder.append(String.join("", row)).append("\r\n");
+        for (List<String> row : console) { 
+            if (!builder.isEmpty())
+                builder.append("\r\n");
+            builder.append(String.join("", row));
         }
         return builder.toString();
     }
