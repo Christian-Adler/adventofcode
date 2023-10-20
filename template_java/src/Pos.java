@@ -35,7 +35,7 @@ public class Pos {
     }
 
     Pos copy() {
-        return new Pos(x, y);
+        return new Pos(x, y, color);
     }
 
     /**
