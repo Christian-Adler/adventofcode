@@ -1,8 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.*;
 
 public class Pos {
+    public static Set<Pos> adjacent = new HashSet<>(Arrays.asList(new Pos(0, 1), new Pos(0, -1), new Pos(1, 0), new Pos(-1, 0)));
+	
     int x = 0;
     int y = 0;
     String color = null;
