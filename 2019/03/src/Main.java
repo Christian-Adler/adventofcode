@@ -4,8 +4,10 @@ import java.nio.file.Files;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        runForInput("./input_0.txt");
-//        runForInput("./input_1.txt");
+//        runForInput("./input_0.txt");
+//        runForInput("./input_0_1.txt");
+//        runForInput("./input_0_2.txt");
+        runForInput("./input_1.txt");
     }
 
     private static void runForInput(String inputFileName) throws IOException {
