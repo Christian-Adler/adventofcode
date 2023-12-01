@@ -1,14 +1,13 @@
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         runForInput("./input_0.txt");
 //        runForInput("./input_1.txt");
     }
 
-    private static void runForInput(String inputFileName) throws IOException {
+    private static void runForInput(String inputFileName) throws Exception {
         System.out.println("\r\nInput: " + inputFileName);
 
         Task task = new Task();
