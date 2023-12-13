@@ -41,11 +41,24 @@ public class Task2 {
     sumArrangements2 += countPossibleCombinations;
   }
 
+  private record CacheKey2(ArrayList<String> damagedRow, List<Integer> damagedBlocks) {
+  }
+
+  private static final Map<CacheKey2, Long> cache2 = new HashMap<>();
+
   private long calcCombinations(ArrayList<String> damagedRow, List<Integer> damagedBlocks) {
     while (damagedRow.size() > 1 && damagedRow.getFirst().equals(".")) damagedRow.removeFirst();
 
+    CacheKey2 cacheKey2 = new CacheKey2(damagedRow, damagedBlocks);
+    Long cachedValue = cache2.get(cacheKey2);
+    if (cachedValue != null) {
+      return cachedValue;
+    }
+
     if (damagedBlocks.size() == 1) {
-      return calcCombinations(damagedRow, damagedBlocks.getFirst()).size();
+      long res = calcCombinations(damagedRow, damagedBlocks.getFirst()).size();
+      cache2.put(cacheKey2, res);
+      return res;
     } else {
       List<Integer> subDamagedBlocks = new ArrayList<>(damagedBlocks);
       int damagedBlock = subDamagedBlocks.removeFirst();
@@ -101,6 +114,7 @@ public class Task2 {
         actToIdx++;
       }
 
+      cache2.put(cacheKey2, combinations);
       return combinations;
     }
   }
