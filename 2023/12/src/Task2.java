@@ -35,7 +35,8 @@ public class Task2 {
     // Part 2
     ArrayList<Integer> damagedRowAsList2 = new ArrayList<>();
     List<Integer> damagedBlocks2 = new ArrayList<>();
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
+      if (i > 0) damagedRowAsList2.add(UNKNOWN);
       damagedRowAsList2.addAll(damagedRowAsList);
       damagedBlocks2.addAll(damagedBlocks);
     }
