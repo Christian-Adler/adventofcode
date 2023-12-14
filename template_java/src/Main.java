@@ -1,30 +1,33 @@
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.stream.Stream;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+  public static void main(String[] args) throws Exception {
         runForInput("./input_0.txt");
 //        runForInput("./input_1.txt");
+  }
+
+  private static void runForInput(@SuppressWarnings("SameParameterValue") String inputFileName) throws Exception {
+	System.out.println("\r\nInput: " + inputFileName);
+
+	Task task = new Task();
+    // Task2 task = new Task2();
+	task.init();
+
+    Instant t1 = Instant.now();
+
+    try (Stream<String> lines = Files.lines(new File(inputFileName).toPath(), StandardCharsets.UTF_8)) {
+      lines.forEach(task::addLine);
     }
 
-    private static void runForInput(String inputFileName) throws Exception {
-        System.out.println("\r\nInput: " + inputFileName);
+    task.afterParse();
+    
+    Instant t2 = Instant.now();
 
-        Task task = new Task();
-//        Task2 task = new Task2();
-        task.init();
-
-        Files.lines(new File(inputFileName).toPath()).forEach(task::addLine);
-
-        long t1 = System.currentTimeMillis();
-        task.afterParse();
-        long t2 = System.currentTimeMillis();
-
-//        System.out.println(task);
-//        System.out.println(task.toStringSVG());		
-//        System.out.println(task.toStringConsole());
-        System.out.println("Duration: " + (t2 - t1) + "ms");
-    }
-
-
+    System.out.println("Duration: " + Duration.between(t1, t2).toMillis() + "ms");
+  }
 }
