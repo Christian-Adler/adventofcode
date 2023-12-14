@@ -1,22 +1,54 @@
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 public class Task2 {
   static AtomicLong sumArrangements = new AtomicLong(0);
   static AtomicLong sumArrangements2 = new AtomicLong(0);
-  static AtomicInteger rowCount = new AtomicInteger(0);
+
 
   static final int WORKING = 0;
   static final int DAMAGED = 1;
   static final int UNKNOWN = 5;
 
+  private static String inputFileName = "";
+
+  private static final Map<Long, Long> mapRow2Combinations = new HashMap<>();
+
+  private static void putRow2Combination(long row, long combinations) {
+    synchronized (mapRow2Combinations) {
+      mapRow2Combinations.put(row, combinations);
+      try {
+        Files.writeString(new File("./evaluated_" + inputFileName).toPath(), mapRow2Combinations.toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+      } catch (IOException e) {
+        out("Failed to write file", e);
+      }
+    }
+  }
+
+  public static void readEvaluated(String inputFileName) {
+    Task2.inputFileName = inputFileName.replace("./", "");
+    try {
+      // {1=1, 2=16384, 3=1, 4=16, 5=2500, 6=506250}
+      String[] evaluated = Util.cleanFrom(Files.readString(new File("./evaluated_" + Task2.inputFileName).toPath()), "{", "}").split(",");
+      for (String eval : evaluated) {
+        long[] entry = Arrays.stream(eval.trim().split("=")).mapToLong(Long::parseLong).toArray();
+        mapRow2Combinations.put(entry[0], entry[1]);
+      }
+    } catch (IOException e) {
+      //
+      System.out.println(e);
+    }
+  }
+
   public void init() {
   }
 
-  public void addLine(String input) {
-    int rowC = rowCount.incrementAndGet();
+  public void addLine(String input, int rowC) {
     out(rowC);
     String[] split = input.split("\\s+", 2);
     String damagedRow = split[0];
@@ -33,6 +65,13 @@ public class Task2 {
     sumArrangements.addAndGet(countPossibleCombinations);
 
     // Part 2
+    Long alreadyEvaluated = mapRow2Combinations.get((long) rowC);
+    if (alreadyEvaluated != null) {
+      out(rowC + " done (eval)");
+      sumArrangements2.addAndGet(alreadyEvaluated);
+      return;
+    }
+
     ArrayList<Integer> damagedRowAsList2 = new ArrayList<>();
     List<Integer> damagedBlocks2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -43,6 +82,8 @@ public class Task2 {
     countPossibleCombinations = calcCombinations(new ArrayList<>(damagedRowAsList2), new ArrayList<>(damagedBlocks2));
     out(rowC + " done");
     sumArrangements2.addAndGet(countPossibleCombinations);
+
+    putRow2Combination(rowC, countPossibleCombinations);
   }
 
 //  private record CacheKey2(ArrayList<Integer> damagedRow, List<Integer> damagedBlocks) {

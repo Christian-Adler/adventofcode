@@ -9,14 +9,14 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-    //    runForInput("./input_0_1.txt");
-    //    runForInput("./input_0.txt");
-    //    runForInput("./input_1.txt");
-    runForInput("./input_1_1-300.txt");
+//    runForInput("./input_0_1.txt");
+    runForInput("./input_0.txt");
+//    runForInput("./input_1.txt");
   }
 
   /*
@@ -35,18 +35,23 @@ public class Main {
   private static void runForInput(@SuppressWarnings("SameParameterValue") String inputFileName) throws Exception {
     System.out.println("\r\nInput: " + inputFileName);
 
-    ThreadPoolExecutor executor = new ThreadPoolExecutor(20, 20, 10, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 10, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
 
     List<Future<?>> futures = new ArrayList<>();
+
+    Task2.readEvaluated(inputFileName);
+
+    AtomicInteger rowCount = new AtomicInteger(0);
 
     Instant t1 = Instant.now();
 
     try (Stream<String> lines = Files.lines(new File(inputFileName).toPath(), StandardCharsets.UTF_8)) {
 
       lines.forEach(l -> {
+        int rowC = rowCount.incrementAndGet();
         futures.add(executor.submit(() -> {
           Task2 task = new Task2();
-          task.addLine(l);
+          task.addLine(l, rowC);
         }));
       });
     }
