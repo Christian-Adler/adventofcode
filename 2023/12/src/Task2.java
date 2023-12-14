@@ -1,11 +1,16 @@
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class Task2 {
   static AtomicLong sumArrangements = new AtomicLong(0);
   static AtomicLong sumArrangements2 = new AtomicLong(0);
   static AtomicInteger rowCount = new AtomicInteger(0);
+
+  static final int WORKING = 0;
+  static final int DAMAGED = 1;
+  static final int UNKNOWN = 5;
 
   public void init() {
   }
@@ -16,7 +21,7 @@ public class Task2 {
     String[] split = input.split("\\s+", 2);
     String damagedRow = split[0];
     //    out("damagedRow", damagedRow);
-    ArrayList<String> damagedRowAsList = Util.str2List(damagedRow);
+    ArrayList<Integer> damagedRowAsList = new ArrayList<>(Util.str2List(damagedRow).stream().map(s -> s.equals(".") ? WORKING : (s.equals("#") ? DAMAGED : UNKNOWN)).toList());
 
     List<Integer> damagedBlocks = Arrays.stream(split[1].split(",")).mapToInt(i -> Integer.parseInt(i.trim())).boxed().toList();
     //    out("damagedBlocks", damagedBlocks);
@@ -28,9 +33,9 @@ public class Task2 {
     sumArrangements.addAndGet(countPossibleCombinations);
 
     // Part 2
-    ArrayList<String> damagedRowAsList2 = new ArrayList<>();
+    ArrayList<Integer> damagedRowAsList2 = new ArrayList<>();
     List<Integer> damagedBlocks2 = new ArrayList<>();
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
       damagedRowAsList2.addAll(damagedRowAsList);
       damagedBlocks2.addAll(damagedBlocks);
     }
@@ -39,13 +44,13 @@ public class Task2 {
     sumArrangements2.addAndGet(countPossibleCombinations);
   }
 
-//  private record CacheKey2(ArrayList<String> damagedRow, List<Integer> damagedBlocks) {
+//  private record CacheKey2(ArrayList<Integer> damagedRow, List<Integer> damagedBlocks) {
 //  }
 //
 //  private static final Map<CacheKey2, Long> cache2 = new HashMap<>();
 
-  private long calcCombinations(ArrayList<String> damagedRow, List<Integer> damagedBlocks) {
-    while (damagedRow.size() > 1 && damagedRow.get(0).equals(".")) {
+  private long calcCombinations(ArrayList<Integer> damagedRow, List<Integer> damagedBlocks) {
+    while (damagedRow.size() > 1 && damagedRow.get(0) == WORKING) {
       damagedRow.remove(0);
     }
 
@@ -68,19 +73,19 @@ public class Task2 {
       Set<String> soFarCombinationsFirstBlock = new HashSet<>();
 
       int whileMax = subDamagedBlocks.stream().mapToInt(Integer::intValue).sum() + subDamagedBlocks.size();
-      int firstDamageEndIdx = String.join("", damagedRow).indexOf("#.");
-      if (firstDamageEndIdx >= 0 && firstDamageEndIdx < whileMax) {
-        whileMax = firstDamageEndIdx;
-      }
+//      int firstDamageEndIdx = String.join("", damagedRow).indexOf("#.");
+//      if (firstDamageEndIdx >= 0 && firstDamageEndIdx < whileMax) {
+//        whileMax = firstDamageEndIdx;
+//      }
 
       int actToIdx = damagedBlock;
       while (actToIdx <= damagedRow.size() - whileMax) {
         // abort before end
 
-        ArrayList<String> damagedRowSubList = new ArrayList<>(damagedRow.subList(0, actToIdx));
+        ArrayList<Integer> damagedRowSubList = new ArrayList<>(damagedRow.subList(0, actToIdx));
         Set<String> combinationsFirstBlock = calcCombinations(damagedRowSubList, damagedBlock);
 
-        if (combinationsFirstBlock.isEmpty() && damagedRowSubList.get(damagedRowSubList.size() - 1).equals(".") && damagedRowSubList.contains("#")) {
+        if (combinationsFirstBlock.isEmpty() && damagedRowSubList.get(damagedRowSubList.size() - 1) == WORKING && damagedRowSubList.contains(DAMAGED)) {
           break;
         }
 
@@ -101,11 +106,11 @@ public class Task2 {
         if (diff > 0) {
 
           // Damaged End = '#' -> sublist2 must start with . (or ? but then set .)
-          ArrayList<String> damagedRowSubList2 = new ArrayList<>(damagedRow.subList(actToIdx, damagedRow.size()));
-          String first = damagedRowSubList2.get(0);
-          if (!first.equals("#")) {
-            if (first.equals("?"))
-              damagedRowSubList2.set(0, ".");
+          ArrayList<Integer> damagedRowSubList2 = new ArrayList<>(damagedRow.subList(actToIdx, damagedRow.size()));
+          Integer first = damagedRowSubList2.get(0);
+          if (first != DAMAGED) {
+            if (first == UNKNOWN)
+              damagedRowSubList2.set(0, WORKING);
 
             long combinationsRest = calcCombinations(damagedRowSubList2, subDamagedBlocks);
 
@@ -123,12 +128,12 @@ public class Task2 {
     }
   }
 
-  private record CacheKey(ArrayList<String> damagedRow, int damagedBlock) {
+  private record CacheKey(ArrayList<Integer> damagedRow, int damagedBlock) {
   }
 
   private static final Map<CacheKey, Set<String>> cache = new HashMap<>();
 
-  private Set<String> calcCombinations(ArrayList<String> damagedRow, int damagedBlock) {
+  private Set<String> calcCombinations(ArrayList<Integer> damagedRow, int damagedBlock) {
     CacheKey cacheKey = new CacheKey(damagedRow, damagedBlock);
     Set<String> cachedValue = cache.get(cacheKey);
     if (cachedValue != null) {
@@ -137,17 +142,17 @@ public class Task2 {
 
     Set<String> countPossibleCombinations = new HashSet<>();
 
-    ArrayList<String> damagedR = new ArrayList<>(damagedRow);
+    ArrayList<Integer> damagedR = new ArrayList<>(damagedRow);
 
     List<Integer> unknownIdxList = new ArrayList<>();
     for (int i = 0; i < damagedRow.size(); i++) {
-      if (damagedRow.get(i).equals("?"))
+      if (damagedRow.get(i) == UNKNOWN)
         unknownIdxList.add(i);
     }
 
     // no variables - ist has to match directly
     if (unknownIdxList.isEmpty()) {
-      String damagedRowCheck = String.join("", damagedR);
+      String damagedRowCheck = String.join("", damagedR.stream().map(String::valueOf).collect(Collectors.joining()));
       List<Integer> damagedGroups = getDamagedGroups(damagedR);
 
       if (damagedGroups.size() == 1 && damagedGroups.get(0) == damagedBlock)
@@ -172,14 +177,14 @@ public class Task2 {
 
       ArrayList<String> binaryAsList = Util.str2List(binary.toString());
       for (int idx = 0; idx < binaryAsList.size(); idx++) {
-        String toSet = binaryAsList.get(idx).equals("1") ? "#" : ".";
+        Integer toSet = binaryAsList.get(idx).equals("1") ? DAMAGED : WORKING;
         damagedR.set(unknownIdxList.get(idx), toSet);
       }
 
-      String damagedRowCheck = String.join("", damagedR);
       List<Integer> damagedGroups = getDamagedGroups(damagedR);
 
       if (damagedGroups.size() == 1 && damagedGroups.get(0) == damagedBlock) {
+        String damagedRowCheck = String.join("", damagedR.stream().map(String::valueOf).collect(Collectors.joining()));
         countPossibleCombinations.add(damagedRowCheck);
 
         //        out("Found combination:", damagedRowCheck);
@@ -198,12 +203,12 @@ public class Task2 {
     out("Part 2", "sumArrangements:", sumArrangements2);
   }
 
-  private static List<Integer> getDamagedGroups(ArrayList<String> damagedR) {
+  private static List<Integer> getDamagedGroups(ArrayList<Integer> damagedR) {
     List<Integer> damagedGroupsTest = new ArrayList<>();
     boolean foundDamage = false;
     int actDamageLength = 0;
-    for (String s : damagedR) {
-      if (s.equals("#")) {
+    for (Integer s : damagedR) {
+      if (s == DAMAGED) {
         foundDamage = true;
         actDamageLength++;
       } else {
