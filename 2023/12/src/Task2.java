@@ -2,7 +2,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -11,8 +17,8 @@ public class Task2 {
   static AtomicLong sumArrangements2 = new AtomicLong(0);
 
 
-  static final int WORKING = 0;
-  static final int DAMAGED = 1;
+  static final int WORKING = 1;
+  static final int DAMAGED = 0;
   static final int UNKNOWN = 5;
 
   private static String inputFileName = "";
@@ -24,7 +30,8 @@ public class Task2 {
       mapRow2Combinations.put(row, combinations);
       try {
         Files.writeString(new File("./evaluated_" + inputFileName).toPath(), mapRow2Combinations.toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-      } catch (IOException e) {
+      }
+      catch (IOException e) {
         out("Failed to write file", e);
       }
     }
@@ -39,7 +46,8 @@ public class Task2 {
         long[] entry = Arrays.stream(eval.trim().split("=")).mapToLong(Long::parseLong).toArray();
         mapRow2Combinations.put(entry[0], entry[1]);
       }
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       //
       System.out.println(e);
     }
@@ -53,7 +61,8 @@ public class Task2 {
     String[] split = input.split("\\s+", 2);
     String damagedRow = split[0];
     //    out("damagedRow", damagedRow);
-    ArrayList<Integer> damagedRowAsList = new ArrayList<>(Util.str2List(damagedRow).stream().map(s -> s.equals(".") ? WORKING : (s.equals("#") ? DAMAGED : UNKNOWN)).toList());
+    ArrayList<Integer> damagedRowAsList = new ArrayList<>(Util.str2List(damagedRow).stream()
+                                                            .map(s -> s.equals(".") ? WORKING : (s.equals("#") ? DAMAGED : UNKNOWN)).toList());
 
     List<Integer> damagedBlocks = Arrays.stream(split[1].split(",")).mapToInt(i -> Integer.parseInt(i.trim())).boxed().toList();
     //    out("damagedBlocks", damagedBlocks);
@@ -75,7 +84,8 @@ public class Task2 {
     ArrayList<Integer> damagedRowAsList2 = new ArrayList<>();
     List<Integer> damagedBlocks2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
-      if (i > 0) damagedRowAsList2.add(UNKNOWN);
+      if (i > 0)
+        damagedRowAsList2.add(UNKNOWN);
       damagedRowAsList2.addAll(damagedRowAsList);
       damagedBlocks2.addAll(damagedBlocks);
     }
@@ -86,27 +96,28 @@ public class Task2 {
     putRow2Combination(rowC, countPossibleCombinations);
   }
 
-//  private record CacheKey2(ArrayList<Integer> damagedRow, List<Integer> damagedBlocks) {
-//  }
-//
-//  private static final Map<CacheKey2, Long> cache2 = new HashMap<>();
+  //  private record CacheKey2(ArrayList<Integer> damagedRow, List<Integer> damagedBlocks) {
+  //  }
+  //
+  //  private static final Map<CacheKey2, Long> cache2 = new HashMap<>();
 
   private long calcCombinations(ArrayList<Integer> damagedRow, List<Integer> damagedBlocks) {
     while (damagedRow.size() > 1 && damagedRow.get(0) == WORKING) {
       damagedRow.remove(0);
     }
 
-//    CacheKey2 cacheKey2 = new CacheKey2(damagedRow, damagedBlocks);
-//    Long cachedValue = cache2.get(cacheKey2);
-//    if (cachedValue != null) {
-//      return cachedValue;
-//    }
+    //    CacheKey2 cacheKey2 = new CacheKey2(damagedRow, damagedBlocks);
+    //    Long cachedValue = cache2.get(cacheKey2);
+    //    if (cachedValue != null) {
+    //      return cachedValue;
+    //    }
 
     if (damagedBlocks.size() == 1) {
       long res = calcCombinations(damagedRow, damagedBlocks.get(0)).size();
-//      cache2.put(cacheKey2, res);
+      //      cache2.put(cacheKey2, res);
       return res;
-    } else {
+    }
+    else {
       List<Integer> subDamagedBlocks = new ArrayList<>(damagedBlocks);
       int damagedBlock = subDamagedBlocks.remove(0);
 
@@ -114,14 +125,27 @@ public class Task2 {
 
       Set<String> soFarCombinationsFirstBlock = new HashSet<>();
 
-      int whileMax = subDamagedBlocks.stream().mapToInt(Integer::intValue).sum() + subDamagedBlocks.size();
-//      int firstDamageEndIdx = String.join("", damagedRow).indexOf("#.");
-//      if (firstDamageEndIdx >= 0 && firstDamageEndIdx < whileMax) {
-//        whileMax = firstDamageEndIdx;
-//      }
+      int atLeastRequiredForSubDamagedBlocks = subDamagedBlocks.stream().mapToInt(Integer::intValue)
+                                                 .sum() + subDamagedBlocks.size(); // Summe + fuer jeden DamagedBlock muss eine arbeitende Feder dazwischen sein
+      int whileMax = damagedRow.size() - atLeastRequiredForSubDamagedBlocks;
+
+      // Suche, ob es nicht eine bessere Abbruchedinungung gibt
+      int idxFirstDamaged = damagedRow.indexOf(DAMAGED);
+      if (idxFirstDamaged >= 0) {
+        int idxFirstWorkingAfterFirstDamaged = damagedRow.subList(idxFirstDamaged, damagedRow.size()).indexOf(WORKING);
+        if (idxFirstWorkingAfterFirstDamaged > -1) {
+          if (idxFirstDamaged + idxFirstWorkingAfterFirstDamaged < whileMax)
+            whileMax = idxFirstDamaged + idxFirstWorkingAfterFirstDamaged;
+        }
+      }
+
+      //      int firstDamageEndIdx = String.join("", damagedRow).indexOf("#.");
+      //      if (firstDamageEndIdx >= 0 && firstDamageEndIdx < whileMax) {
+      //        whileMax = firstDamageEndIdx;
+      //      }
 
       int actToIdx = damagedBlock;
-      while (actToIdx <= damagedRow.size() - whileMax) {
+      while (actToIdx <= whileMax) {
         // abort before end
 
         ArrayList<Integer> damagedRowSubList = new ArrayList<>(damagedRow.subList(0, actToIdx));
@@ -165,7 +189,7 @@ public class Task2 {
         actToIdx++;
       }
 
-//      cache2.put(cacheKey2, combinations);
+      //      cache2.put(cacheKey2, combinations);
       return combinations;
     }
   }
@@ -176,6 +200,26 @@ public class Task2 {
   private static final Map<CacheKey, Set<String>> cache = new HashMap<>();
 
   private Set<String> calcCombinations(ArrayList<Integer> damagedRow, int damagedBlock) {
+
+    // Pruefen, ob damageRow ueberhaupt fuer nur einen damagedBlock moeglich sein kann: gibt es funktionierende zwischen nicht funktionierenden? Dann nicht.
+    boolean foundFirstDamaged = false;
+    boolean foundWorkingAfterFirstDamaged = false;
+    for (Integer i : damagedRow) {
+      if (i == DAMAGED) {
+        if (foundWorkingAfterFirstDamaged)
+          return new HashSet<>();
+        foundFirstDamaged = true;
+      }
+      else if (i == WORKING) {
+        if (foundFirstDamaged)
+          foundWorkingAfterFirstDamaged = true;
+      }
+    }
+
+    // Pruefen, ob es bereits mehr nicht funnktionierende gibt wie damageBlock
+    if (damagedRow.stream().filter(i -> i == DAMAGED).count() > damagedBlock)
+      return new HashSet<>();
+
     CacheKey cacheKey = new CacheKey(damagedRow, damagedBlock);
     Set<String> cachedValue = cache.get(cacheKey);
     if (cachedValue != null) {
@@ -253,7 +297,8 @@ public class Task2 {
       if (s == DAMAGED) {
         foundDamage = true;
         actDamageLength++;
-      } else {
+      }
+      else {
         if (foundDamage) {
           damagedGroupsTest.add(actDamageLength);
           actDamageLength = 0;

@@ -14,9 +14,9 @@ import java.util.stream.Stream;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-//    runForInput("./input_0_1.txt");
-    runForInput("./input_0.txt");
-//    runForInput("./input_1.txt");
+    //    runForInput("./input_0_1.txt");
+    //    runForInput("./input_0.txt");
+    runForInput("./input_1.txt");
   }
 
   /*
@@ -35,7 +35,7 @@ public class Main {
   private static void runForInput(@SuppressWarnings("SameParameterValue") String inputFileName) throws Exception {
     System.out.println("\r\nInput: " + inputFileName);
 
-    ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 10, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(16, 20, 10, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
 
     List<Future<?>> futures = new ArrayList<>();
 
