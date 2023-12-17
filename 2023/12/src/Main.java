@@ -3,68 +3,28 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-//    runForInput("./input_0_1.txt");
-    runForInput("./input_0.txt");
-//    runForInput("./input_1.txt");
+    //    runForInput("./input_0.txt");
+    runForInput("./input_1.txt");
   }
-
-  /*
-  dauert zu lang:
-  12
-125
-192
-141
-281
-124
-243
-63
-230
-  * */
 
   private static void runForInput(@SuppressWarnings("SameParameterValue") String inputFileName) throws Exception {
     System.out.println("\r\nInput: " + inputFileName);
 
-    ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 10, 10, TimeUnit.MINUTES, new LinkedBlockingQueue<>());
-
-    List<Future<?>> futures = new ArrayList<>();
-
-    Task2.readEvaluated(inputFileName);
-
-    AtomicInteger rowCount = new AtomicInteger(0);
+    //    Task task = new Task();
+    Task2 task = new Task2();
+    task.init();
 
     Instant t1 = Instant.now();
 
     try (Stream<String> lines = Files.lines(new File(inputFileName).toPath(), StandardCharsets.UTF_8)) {
-
-      lines.forEach(l -> {
-        int rowC = rowCount.incrementAndGet();
-        futures.add(executor.submit(() -> {
-          Task2 task = new Task2();
-          task.addLine(l, rowC);
-        }));
-      });
+      lines.forEach(task::addLine);
     }
 
-    for (Future<?> future : futures) {
-      while (!future.isDone()) {
-        Thread.sleep(100);
-      }
-    }
-
-    Task2.afterParse();
-
-    executor.shutdownNow();
+    task.afterParse();
 
     Instant t2 = Instant.now();
 
