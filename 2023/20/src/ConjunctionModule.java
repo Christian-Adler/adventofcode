@@ -1,7 +1,9 @@
 import java.util.*;
+import java.util.function.Consumer;
 
 public class ConjunctionModule extends Module {
   private final Map<String, Boolean> inputs = new HashMap<>();
+  private Consumer<Boolean> onPulse = null;
 
   public ConjunctionModule(String name, ArrayList<String> destinationModules) {
     super(name, destinationModules);
@@ -16,27 +18,34 @@ public class ConjunctionModule extends Module {
 
   @Override
   public void reset() {
-    for (String s : inputs.keySet()) {
-      inputs.put(s, false);
-    }
+    inputs.replaceAll((s, v) -> false);
+  }
+
+  public boolean isAllInputHigh() {
+    Optional<Boolean> first = inputs.values().stream().filter(b -> !b).findFirst();
+    return first.isEmpty();
   }
 
   @Override
   public void onPulse(Pulse pulse, LinkedList<Pulse> workList) {
     inputs.put(pulse.sourceModule(), pulse.high());
 
-    boolean sendLow = true;
-    for (Boolean lastInputVal : inputs.values()) {
-      sendLow = sendLow && lastInputVal;
-    }
+    boolean allHigh = isAllInputHigh();
+
+    if (onPulse != null && !allHigh)
+      onPulse.accept(true);
 
     for (String destinationModule : destinationModules) {
-      workList.add(new Pulse(name, !sendLow, destinationModule));
+      workList.add(new Pulse(name, !allHigh, destinationModule));
     }
   }
 
   @Override
   public String toString() {
     return "ConjunctionModule &" + name + " => " + destinationModules;
+  }
+
+  public void registerOnPulseHigh(Consumer<Boolean> listener) {
+    onPulse = listener;
   }
 }
