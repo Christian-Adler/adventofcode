@@ -1,7 +1,8 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Task {
-  private Set<Brick> bricks = new HashSet<>();
+  private final Set<Brick> bricks = new HashSet<>();
 
   public void init() {
   }
@@ -93,8 +94,6 @@ public class Task {
     weder x noch y alleine reichen zum Fall aber ---- reist alles ein.
      */
 
-    Map<Brick, Set<Brick>> brick2FallingBricks = new HashMap<>();
-
     worklist = new ArrayList<>(bricks);
     worklist.sort(Comparator.comparingInt(Brick::minZ).reversed());
 //    out(worklist);
@@ -119,6 +118,12 @@ public class Task {
     }
 
     out("Part 2:", countFallingBricks);
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("[");
+    builder.append(bricks.stream().map(Brick::toJson).collect(Collectors.joining(",")));
+    builder.append("]");
+    out(builder);
   }
 
   public void out(Object... str) {

@@ -118,4 +118,19 @@ public final class Brick {
     return onlySupportedBy;
   }
 
+  public String toJson() {
+    String res = "{";
+    res += getJSonVal("width", maxX() - minX() + 1) + ",";
+    res += getJSonVal("depth", maxY() - minY() + 1) + ",";
+    res += getJSonVal("height", maxZ() - minZ() + 1) + ",";
+    res += getJSonVal("x", (double) (maxX() - minX() + 1) / 2 + minX()) + ",";
+    res += getJSonVal("y", (double) (maxZ() - minZ() + 1) / 2 + minZ()) + ",";
+    res += getJSonVal("z", (double) (maxY() - minY() + 1) / 2 + minY());
+    res += "}";
+    return res;
+  }
+
+  private static String getJSonVal(String prop, double val) {
+    return "\"" + prop + "\":" + val;
+  }
 }
