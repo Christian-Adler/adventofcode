@@ -15,8 +15,8 @@ public class Main {
   private static void runForInput(@SuppressWarnings("SameParameterValue") String inputFileName) throws Exception {
     System.out.println("\r\nInput: " + inputFileName);
 
-//    Task task = new Task();
-    Task2 task = new Task2();
+    Task task = new Task();
+//    Task2 task = new Task2();
     task.init();
 
     Instant t1 = Instant.now();

@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.*;
 
 public class Task {
@@ -33,7 +34,7 @@ public class Task {
     }
   }
 
-  public void afterParse() {
+  public void afterParse() throws IOException {
     // find start and end
     findStartAndEnd();
 
@@ -44,6 +45,8 @@ public class Task {
     assert maxPath != null;
     out();
     out(toStringConsole(maxPath));
+
+    Util.writeToAOCSvg(toStringSVG(maxPath));
 
     out("Part 1", maxPath.size() - 1);
   }
@@ -118,8 +121,10 @@ public class Task {
     Util.out(str);
   }
 
-  public String toStringSVG() {
+  public String toStringSVG(Collection<Pos> optPath) {
     SVG svg = new SVG();
+    map.keySet().forEach(p -> svg.add(p, "#a0a0a0"));
+    optPath.forEach(svg::add);
     return svg.toSVGStringAged();
   }
 
