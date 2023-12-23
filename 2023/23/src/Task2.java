@@ -1,18 +1,14 @@
-import java.io.IOException;
 import java.util.*;
 
 public class Task2 {
   private final Map<Pos, Node> map = new HashMap<>();
-  private final Set<Pos> ways = new HashSet<>();
-  private final Set<Pos> walls = new HashSet<>();
   private Pos start = null;
   private Pos end = null;
   int maxY = -1;
   int maxX = -1;
 
-  private final Set<Pos> traps = new HashSet<>();
-
   public void init() {
+    out("needs a lot of ram ~16GB");
   }
 
   public void addLine(String input) {
@@ -23,16 +19,12 @@ public class Task2 {
     for (int x = 0; x < asList.size(); x++) {
       String s = asList.get(x);
       Pos p = new Pos(x, maxY, s);
-      if (s.equals("#"))
-        walls.add(p);
-      else {
-        ways.add(p);
+      if (!s.equals("#"))
         map.put(p, new Node(p));
-      }
     }
   }
 
-  public void afterParse() throws IOException {
+  public void afterParse() {
     // find start and end
     findStartAndEnd();
 
@@ -91,28 +83,11 @@ public class Task2 {
       directPathNodes = map.values().stream().filter(n -> n.neighbors.size() == 2).map(n -> n.pos).findFirst().orElse(null);
     }
 
-    out(map.size());
-    out(map);
+//    out(map.size());
+//    out(map);
 
-    SVG svg = new SVG();
-    for (Pos pos : map.keySet()) {
-      svg.add(pos, "#ff0000");
-    }
-    Util.writeToAOCSvg(svg.toSVGString());
-
-//
-////    out(toStringConsole());
-//
     LinkedHashSet<Node> maxPath = findMaxPath();
     out(maxPath);
-//
-//    assert maxPath != null;
-//    out();
-//    out(toStringConsole(maxPath));
-//
-//    Util.writeToAOCSvg(toStringSVG(maxPath));
-
-//    out("Part 2", maxPath.size() - 1);
   }
 
   private LinkedHashSet<Node> findMaxPath() {
@@ -178,35 +153,5 @@ public class Task2 {
 
   public void out(Object... str) {
     Util.out(str);
-  }
-
-  public String toStringSVG(Collection<Pos> optPath) {
-    SVG svg = new SVG();
-    for (Pos wall : walls) {
-      svg.add(wall, "#a0a0a0");
-    }
-    for (Pos pos : optPath) {
-      svg.add(pos);
-    }
-    return svg.toSVGStringAged();
-  }
-
-
-  public String toStringConsole() {
-    return toStringConsole(null);
-  }
-
-  public String toStringConsole(Collection<Pos> optPath) {
-    SVG svg = new SVG();
-    map.keySet().forEach(svg::add);
-    walls.forEach(svg::add);
-    if (optPath != null)
-      optPath.forEach(p -> {
-        svg.add(p, "O");
-      });
-    svg.add(start, "S");
-    svg.add(end, "E");
-
-    return svg.toConsoleString();
   }
 }
