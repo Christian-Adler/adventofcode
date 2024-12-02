@@ -7,16 +7,16 @@ import java.util.stream.Stream;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-        runForInput("./input_0.txt");
-//        runForInput("./input_1.txt");
+    runForInput("./input_example_0.txt");
+//        runForInput("./input.txt");
   }
 
   private static void runForInput(@SuppressWarnings("SameParameterValue") String inputFileName) throws Exception {
-	System.out.println("\r\nInput: " + inputFileName);
+    System.out.println("\r\nInput: " + inputFileName);
 
-	Task task = new Task();
+    Task task = new Task();
     // Task2 task = new Task2();
-	task.init();
+    task.init();
 
     Instant t1 = Instant.now();
 
@@ -25,7 +25,7 @@ public class Main {
     }
 
     task.afterParse();
-    
+
     Instant t2 = Instant.now();
 
     System.out.println("Duration: " + Duration.between(t1, t2).toMillis() + "ms");
