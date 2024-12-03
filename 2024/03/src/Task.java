@@ -6,7 +6,7 @@ public class Task {
   private final String regex = "mul\\((\\d{1,3}),(\\d{1,3})\\)";
   private final Pattern pattern = Pattern.compile(regex);
 
-  final String regex2 = " |(do\\(\\))|don't\\(\\)|(mul\\((\\d{1,3}),(\\d{1,3})\\))";
+  final String regex2 = " *(do\\(\\))|don't\\(\\)|(mul\\((\\d{1,3}),(\\d{1,3})\\))";
   private final Pattern pattern2 = Pattern.compile(regex2);
 
 
