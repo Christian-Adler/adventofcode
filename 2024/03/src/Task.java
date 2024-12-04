@@ -6,7 +6,7 @@ public class Task {
   private final String regex = "mul\\((\\d{1,3}),(\\d{1,3})\\)";
   private final Pattern pattern = Pattern.compile(regex);
 
-  final String regex2 = " *(do\\(\\))|don't\\(\\)|(mul\\((\\d{1,3}),(\\d{1,3})\\))";
+  final String regex2 = "_|(do\\(\\))|don't\\(\\)|(mul\\((\\d{1,3}),(\\d{1,3})\\))";
   private final Pattern pattern2 = Pattern.compile(regex2);
 
 
@@ -14,6 +14,7 @@ public class Task {
 
   long sum2 = 0;
   boolean enabled = true;
+  int count = 0;
 
   public void init() {
   }
@@ -41,17 +42,21 @@ public class Task {
       // }
       if (full.equals("do()"))
         enabled = true;
-      else if (full.equals("don't()"))
+      else if (full.equals("don't()")) {
         enabled = false;
-      else if (enabled && full.startsWith("mul")) {
+      } else if (enabled && full.startsWith("mul")) {
+        count++;
         long val1 = Long.parseLong(matcher2.group(3));
         long val2 = Long.parseLong(matcher2.group(4));
         sum2 += val1 * val2;
+
+        // out(count, sum2, "v1", val1, "v2", val2);
       }
     }
   }
 
   public void afterParse() {
+    out("count", count);
     out("Part 1", "sum", sum);
     out("Part 2", "sum", sum2);
   }
