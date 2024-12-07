@@ -24,7 +24,7 @@ public class Task {
     }
 
     out("part 1", "sum", sum);
-    out("part 2", "sum", sum2); // ! 3247067810227
+    out("part 2", "sum", sum2);
   }
 
   public void out(Object... str) {

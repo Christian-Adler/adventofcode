@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
 
 public class Equation {
   private final long testValue;
@@ -13,76 +14,37 @@ public class Equation {
   }
 
   public boolean isSolvable() {
-    long start = numbers.getFirst();
-    List<Long> nos = numbers.subList(1, numbers.size());
-
-    return isSolvable(start, nos);
-  }
-
-  private boolean isSolvable(long soFarRes, List<Long> nos) {
-    if (soFarRes > testValue) return false;
-
-    long next = nos.getFirst();
-
-    if (nos.size() == 1) {
-      long nextRes = soFarRes * next;
-      if (nextRes == testValue)
-        return true;
-
-      nextRes = soFarRes + next;
-      return nextRes == testValue;
-    }
-
-    List<Long> nextNos = nos.subList(1, nos.size());
-
-    if (isSolvable(soFarRes * next, nextNos))
-      return true;
-
-    return isSolvable(soFarRes + next, nextNos);
+    List<BiFunction<Long, Long, Long>> operators = Arrays.asList(this::mult, Long::sum);
+    return isSolvable(operators);
   }
 
   public boolean isSolvable2() {
+    List<BiFunction<Long, Long, Long>> operators = Arrays.asList(this::mult, Long::sum, this::concat);
+    return isSolvable(operators);
+  }
+
+  private boolean isSolvable(List<BiFunction<Long, Long, Long>> operators) {
     long start = numbers.getFirst();
     List<Long> nos = numbers.subList(1, numbers.size());
 
-    return isSolvable2(start, nos);
+    return isSolvable(start, nos, operators);
   }
 
-  private boolean isSolvable2(long soFarRes, List<Long> nos) {
-    if (soFarRes > testValue) return false;
+  private boolean isSolvable(long soFarRes, List<Long> nos, List<BiFunction<Long, Long, Long>> operators) {
+    if (soFarRes == testValue && nos.isEmpty()) return true;
+    if (soFarRes > testValue || nos.isEmpty()) return false;
 
     long next = nos.getFirst();
-
-    if (nos.size() == 1) {
-      // *
-      long nextRes = soFarRes * next;
-      if (nextRes == testValue)
-        return true;
-
-      // +
-      nextRes = soFarRes + next;
-      if (nextRes == testValue)
-        return true;
-
-      // ||
-      nextRes = concat(soFarRes, next);
-
-      return nextRes == testValue;
-    }
-
     List<Long> nextNos = nos.subList(1, nos.size());
 
-    // *
-    if (isSolvable2(soFarRes * next, nextNos))
-      return true;
+    for (BiFunction<Long, Long, Long> operator : operators) {
+      if (isSolvable(operator.apply(soFarRes, next), nextNos, operators)) return true;
+    }
+    return false;
+  }
 
-    // +
-    if (isSolvable2(soFarRes + next, nextNos))
-      return true;
-
-    // ||
-    long nextRes = concat(soFarRes, next);
-    return isSolvable2(nextRes, nextNos);
+  private long mult(long val1, long val2) {
+    return val1 * val2;
   }
 
   private long concat(long val1, long val2) {
