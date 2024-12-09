@@ -17,7 +17,10 @@ public class Block {
 
   public void reduceSize() {
     size--;
-    isEmpty();
+  }
+
+  public void reduceSize(int val) {
+    size -= val;
   }
 
   public boolean isEmpty() {

@@ -9,7 +9,7 @@ public class Main {
   public static void main(String[] args) throws Exception {
     runForInput("./input_example_1.txt");
     // runForInput("./input_example_2.txt");
-    // runForInput("./input.txt");
+    runForInput("./input.txt");
   }
 
   private static void runForInput(@SuppressWarnings("SameParameterValue") String inputFileName) throws Exception {
