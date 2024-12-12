@@ -95,4 +95,8 @@ public class Util {
 
     return primeFactorsMap;
   }
+
+  public static double scale(double val, double inMin, double inMax, double outMin, double outMax) {
+    return (val - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+  }
 }

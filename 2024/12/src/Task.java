@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class Task {
@@ -16,7 +19,8 @@ public class Task {
     }
   }
 
-  public void afterParse() {
+  public void afterParse() throws IOException {
+    Files.writeString(Path.of("./svg.svg"), toStringSVG());
     // out(toStringConsole());
 
     Set<Pos> visited = new HashSet<>();
@@ -144,7 +148,11 @@ public class Task {
 
 
   public String toStringSVG() {
+    ArrayList<String> alphabet = Util.str2List("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     SVG svg = new SVG();
+    for (Pos pos : map.keySet()) {
+      svg.add(pos, SVG.HSLtoRGB((float) Util.scale(alphabet.indexOf(pos.color) * 31 % 26, 0, 26, 60, 270) % 360, 50, 50));
+    }
     return svg.toSVGStringAged();
   }
 
