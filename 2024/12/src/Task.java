@@ -38,7 +38,7 @@ public class Task {
     for (Set<Pos> area : areas) {
       // out("area", area.size(), getAreaPerimeter(area));
       prize += (long) area.size() * getAreaPerimeter(area);
-      out("area", area.iterator().next().color, area.size(), getAreaSides(area));
+      // out("area", area.iterator().next().color, area.size(), getAreaSides(area));
       prize2 += (long) area.size() * getAreaSides(area);
     }
     out("part 1", "prize", prize);
