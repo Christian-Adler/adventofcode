@@ -23,23 +23,14 @@ public class Machine {
   }
 
   public int calcMinTokens() {
-    minTokens = getMinTokens(btnA, 3, btnB, 1);
-    int tokens = getMinTokens(btnB, 1, btnA, 3);
-    if (minTokens < 0 || tokens > 0 && tokens < minTokens)
-      minTokens = tokens;
-    return minTokens;
-  }
-
-  private int getMinTokens(Pos btn1, int factor1, Pos btn2, int factor2) {
-    int minTokens = -1;
-
     int maxBtnPress = 100;
 
     Pos actPos = new Pos(0, 0);
-    for (int btn1Pressed = 1; btn1Pressed <= maxBtnPress; btn1Pressed++) {
-      actPos.add(btn1);
+    for (int btnAPressed = 0; btnAPressed <= maxBtnPress; btnAPressed++) {
+      if (btnAPressed > 0)
+        actPos.add(btnA);
       if (actPos.equals(prize)) {
-        int tokens = btn1Pressed * factor1;
+        int tokens = btnAPressed * 3;
         if (minTokens < 0 || tokens < minTokens)
           minTokens = tokens;
       }
@@ -47,10 +38,11 @@ public class Machine {
         break;
 
       Pos checkPos = actPos.copy();
-      for (int btn2Pressed = 1; btn2Pressed <= maxBtnPress; btn2Pressed++) {
-        checkPos.add(btn2);
+      for (int btnBPressed = 0; btnBPressed <= maxBtnPress; btnBPressed++) {
+        if (btnBPressed > 0)
+          checkPos.add(btnB);
         if (checkPos.equals(prize)) {
-          int tokens = btn1Pressed * factor1 + btn2Pressed * factor2;
+          int tokens = btnAPressed * 3 + btnBPressed;
           if (minTokens < 0 || tokens < minTokens)
             minTokens = tokens;
         }
