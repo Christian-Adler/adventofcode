@@ -22,33 +22,21 @@ public class Task {
 
   public void afterParse() {
     long sumTokens = 0;
+    long sumTokens2 = 0;
     for (Machine machine : machines) {
-      int tokens = machine.calcMinTokens();
-      if (tokens >= 0) sumTokens += tokens;
+      long tokens = machine.calcMinTokens();
+      if (tokens >= 0)
+        sumTokens += tokens;
+      tokens = machine.calcMinTokens2();
+      if (tokens >= 0)
+        sumTokens2 += tokens;
     }
     // out(machines);
     out("part 1", "tokens", sumTokens);
+    out("part 2", "tokens", sumTokens2);
   }
 
   public void out(Object... str) {
     Util.out(str);
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder builder = new StringBuilder();
-
-    return builder.toString();
-  }
-
-  public String toStringSVG() {
-    SVG svg = new SVG();
-    return svg.toSVGStringAged();
-  }
-
-
-  public String toStringConsole() {
-    SVG svg = new SVG();
-    return svg.toConsoleString();
   }
 }

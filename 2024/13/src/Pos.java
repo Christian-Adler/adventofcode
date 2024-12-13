@@ -18,16 +18,16 @@ public class Pos {
     adjacent8.addAll(adjacentDiagonal);
   }
 
-  int x = 0;
-  int y = 0;
+  long x = 0;
+  long y = 0;
   String color = null;
 
-  public Pos(int x, int y) {
+  public Pos(long x, long y) {
     this.x = x;
     this.y = y;
   }
 
-  public Pos(int x, int y, String color) {
+  public Pos(long x, long y, String color) {
     this(x, y);
     this.color = color;
   }
@@ -37,7 +37,7 @@ public class Pos {
     this.y += add.y;
   }
 
-  Pos addToNew(int x, int y) {
+  Pos addToNew(long x, long y) {
     return new Pos(this.x + x, this.y + y);
   }
 
@@ -45,7 +45,7 @@ public class Pos {
     return addToNew(other.x, other.y);
   }
 
-  Pos multToNew(int mult) {
+  Pos multToNew(long mult) {
     return new Pos(this.x * mult, this.y * mult);
   }
 
@@ -71,21 +71,21 @@ public class Pos {
    *
    * @return
    */
-  int manhattanDistance() {
+  long manhattanDistance() {
     return Math.abs(x) + Math.abs(y);
   }
 
-  int manhattanDistance(Pos other) {
+  long manhattanDistance(Pos other) {
     return Math.abs(x - other.x) + Math.abs(y - other.y);
   }
 
   List<Pos> pathBetween(Pos other) {
     List<Pos> path = new ArrayList<>();
-    int maxDist = Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
-    int xStep = (other.x - x) / maxDist;
-    int yxStep = (other.y - y) / maxDist;
+    long maxDist = Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
+    long xStep = (other.x - x) / maxDist;
+    long yxStep = (other.y - y) / maxDist;
 
-    for (int i = 0; i <= maxDist; i++) {
+    for (long i = 0; i <= maxDist; i++) {
       Pos step = addToNew(i * xStep, i * yxStep);
       if (!step.equals(this) && !step.equals(other))
         path.add(step);

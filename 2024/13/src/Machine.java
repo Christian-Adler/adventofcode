@@ -5,7 +5,7 @@ public class Machine {
   Pos btnA = null;
   Pos btnB = null;
   Pos prize = null;
-  int minTokens = -2;
+
 
   public void input(String input) {
     if (input.contains("Button")) {
@@ -23,6 +23,7 @@ public class Machine {
   }
 
   public int calcMinTokens() {
+    int minTokens = -2;
     int maxBtnPress = 100;
 
     Pos actPos = new Pos(0, 0);
@@ -53,12 +54,45 @@ public class Machine {
     return minTokens;
   }
 
+  public long calcMinTokens2() {
+    long px = prize.x + 10000000000000L;
+    long py = prize.y + 10000000000000L;
+    long minTokens = -2;
+
+    /*  Gleichungssystem aufgeloest:
+     * Px = Ax * v1 + Bx * v2
+     * Py = Ay * v1 + By * v2
+     *
+     * => v2 = (Py - Ay * v1) / By
+     * => v1 = (Px * By - Py * Bx) / (Ax * By - Bx * Ay)
+     *
+     * Nur ganzahlig loesen
+     */
+
+    long numerator = px * btnB.y - py * btnB.x;
+    long denominator = btnA.x * btnB.y - btnB.x * btnA.y;
+    if (denominator == 0)
+      throw new IllegalArgumentException("div 0");
+    if (numerator % denominator != 0)
+      return minTokens;
+    long v1 = numerator / denominator;
+
+    numerator = py - btnA.y * v1;
+    denominator = btnB.y;
+    if (numerator % denominator != 0)
+      return minTokens;
+    long v2 = numerator / denominator;
+
+    minTokens = v1 * 3 + v2;
+
+    return minTokens;
+  }
+
   @Override
   public String toString() {
     return
         "btnA=" + btnA +
             "\r\nbtnB=" + btnB +
-            "\r\nprice=" + prize +
-            "\r\nminTokens=" + minTokens;
+            "\r\nprice=" + prize;
   }
 }
