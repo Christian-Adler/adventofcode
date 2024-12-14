@@ -6,7 +6,7 @@ public class Task {
   public void addLine(String input) {
   }
 
-  public void afterParse() {
+  public void afterParse() throws Exception {
   }
 
   public void out(Object... str) {
@@ -18,11 +18,10 @@ public class Task {
     return toStringConsole();
   }
 
-  public String toStringSVG() {
+  public void toBmp() throws Exception {
     Img img = new Img();
-    return img.toSVGStringAged();
+    img.writeBitmapAged();
   }
-
 
   public String toStringConsole() {
     Img img = new Img();

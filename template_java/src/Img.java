@@ -3,10 +3,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class Img {
@@ -14,7 +12,7 @@ public class Img {
   int yMin = Integer.MAX_VALUE;
   int xMax = Integer.MIN_VALUE;
   int yMax = Integer.MIN_VALUE;
-  Set<Vec> positions = new LinkedHashSet<>();
+  List<Vec> imgPositions = new LinkedList<>();
 
   void add(Vec vec) {
     add(vec, null);
@@ -31,16 +29,28 @@ public class Img {
 
     Vec p = new Vec(x, y, color != null ? color : vec.color);
 
-    positions.add(p);
+    imgPositions.add(p);
+  }
+
+  private Set<Vec> getPaintPositions() {
+    return new LinkedHashSet<>(imgPositions.reversed());
   }
 
   public void writeBitmap() throws IOException {
-    writeBitmap(null);
+    writeBitmap(null, false);
   }
 
-  public void writeBitmap(String path) throws IOException {
-    int width = xMax - xMin;
-    int height = yMax - yMin;
+  public void writeBitmapAged() throws IOException {
+    writeBitmap(null, true);
+  }
+
+  public void writeBitmap(String path, boolean aged) throws IOException {
+    Set<Vec> positions = getPaintPositions();
+
+    int steps = positions.size(); // Anzahl schritte aus Task ...
+    int width = Math.max(xMax - xMin, 2);
+    int height = Math.max(yMax - yMin, 2);
+    int count = 0;
     BufferedImage img = new BufferedImage(width + 1, height + 1, BufferedImage.TYPE_INT_RGB);
     for (Vec vec : positions) {
       int yIdx = vec.y - this.yMin;
@@ -50,15 +60,20 @@ public class Img {
       int rgb = Color.RED.getRGB();
       if (vec.color instanceof Color col)
         rgb = col.getRGB();
-      if (vec.color instanceof Integer i)
+      else if (vec.color instanceof Integer i)
         rgb = i;
+      else if (aged) {
+        rgb = getAgedColor(count, steps).getRGB();
+      }
 
       img.setRGB(xIdx, yIdx, rgb);
+      count++;
     }
     ImageIO.write(img, "bmp", new File(path == null ? "./img.bmp" : path));
   }
 
   String toConsoleString() {
+    Set<Vec> positions = getPaintPositions();
     List<List<String>> console = new ArrayList<>();
     for (int y = 0; y <= yMax - yMin; y++) {
       List<String> row = new ArrayList<>();
@@ -88,20 +103,10 @@ public class Img {
     return builder.toString();
   }
 
+
   String toSVGStringAged() {
-    int startL = 40;
-    int endL = 50;
-    int startS = 40;
-    int endS = 100;
-    int startH = 260;
-    int endH = 70;
-
-    float steps = positions.size(); // Anzahl schritte aus Task...
-
-    float stepL = (endL - startL) / steps;
-    float stepS = (endS - startS) / steps;
-    float stepH = (endH - startH) / steps;
-
+    Set<Vec> positions = getPaintPositions();
+    int steps = positions.size(); // Anzahl schritte aus Task...
 
     StringBuilder res = new StringBuilder("\r\n");
 
@@ -117,10 +122,7 @@ public class Img {
       } else if (vec.color instanceof Color color) {
         rgb = "#" + String.format("%02X", (0xFF & color.getRed())) + String.format("%02X", (0xFF & color.getGreen())) + String.format("%02X", (0xFF & color.getBlue()));
       } else {
-        float h = startH + count * stepH;
-        float s = startS + count * stepS;
-        float l = startL + count * stepL;
-        rgb = HSLtoRGB(h, s, l);
+        rgb = color2Hex(getAgedColor(count, steps));
       }
       count++;
       res.append("<rect style=\"fill:").append(rgb).append(";\" width=\"1\" height=\"1\" x=\"").append(vec.x - this.xMin).append("\" y=\"").append(vec.y - this.yMin).append("\" />\r\n");
@@ -132,6 +134,7 @@ public class Img {
   }
 
   String toSVGString() {
+    Set<Vec> positions = getPaintPositions();
     StringBuilder res = new StringBuilder("\r\n");
 
     res.append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"").append(this.xMax - this.xMin + 3).append("\" height=\"").append(this.yMax - this.yMin + 3).append("\">\r\n");
@@ -158,23 +161,52 @@ public class Img {
    * @param s Saturation is specified as a percentage in the range 1 - 100.
    * @param l Luminance is specified as a percentage in the range 1 - 100.
    */
-  public static String HSLtoRGB(float h, float s, float l) {
-    int[] rgb = HSLtoRGB(h, s, l, 1);
-    String res = "#";
-    String hex = Integer.toHexString(rgb[0]);
-    if (hex.length() < 2)
-      res += "0";
-    res += hex;
-    hex = Integer.toHexString(rgb[1]);
-    if (hex.length() < 2)
-      res += "0";
-    res += hex;
-    hex = Integer.toHexString(rgb[2]);
-    if (hex.length() < 2)
-      res += "0";
-    res += hex;
+  public static String hsl2Hex(float h, float s, float l) {
+    int[] rgb = hsla2rgbIntArray(h, s, l, 1);
+    return intArr2Hex(rgb);
+  }
 
+  public static String color2Hex(Color color) {
+    return "#" + Integer.toHexString(color.getRGB()).substring(2); // Color hat alpha vorne!?
+  }
+
+  /**
+   * @param rgb 3int [0-255]
+   * @return HexString #ffffff
+   */
+  private static String intArr2Hex(int[] rgb) {
+    String res = "#";
+    res += int2hex2(rgb[0]);
+    res += int2hex2(rgb[1]);
+    res += int2hex2(rgb[2]);
     return res;
+  }
+
+  private static String int2hex2(int val) {
+    String hex = Integer.toHexString(val);
+    if (hex.length() < 2)
+      hex = "0" + hex;
+    return hex;
+  }
+
+  private static Color getAgedColor(int step, int steps) {
+    int startL = 40;
+    int endL = 50;
+    int startS = 40;
+    int endS = 100;
+    int startH = 260;
+    int endH = 70;
+
+    float stepL = (endL - startL) / (float) steps;
+    float stepS = (endS - startS) / (float) steps;
+    float stepH = (endH - startH) / (float) steps;
+
+    float h = startH + step * stepH;
+    float s = startS + step * stepS;
+    float l = startL + step * stepL;
+    int[] rgb = hsla2rgbIntArray(h, s, l, 1);
+
+    return new Color(rgb[0], rgb[1], rgb[2]);
   }
 
   /**
@@ -186,8 +218,9 @@ public class Img {
    * @param alpha the alpha value between 0 - 1
    *              adapted from <a href="https://svn.codehaus.org/griffon/builders/gfxbuilder/tags/GFXBUILDER_0.2/">...</a>
    *              gfxbuilder-core/src/main/com/camick/awt/HSLColor.java
+   * @return 4int array [0-255]
    */
-  public static int[] HSLtoRGB(float h, float s, float l, float alpha) {
+  public static int[] hsla2rgbIntArray(float h, float s, float l, float alpha) {
     if (s < 0.0f || s > 100.0f) {
       String message = "Color parameter outside of expected range - Saturation";
       throw new IllegalArgumentException(message);
@@ -219,16 +252,16 @@ public class Img {
 
     float p = 2 * l - q;
 
-    int r = Math.round(Math.min(255, Math.max(0, HueToRGB(p, q, h + (1.0f / 3.0f)) * 256)));
-    int g = Math.round(Math.min(255, Math.max(0, HueToRGB(p, q, h) * 256)));
-    int b = Math.round(Math.min(255, Math.max(0, HueToRGB(p, q, h - (1.0f / 3.0f)) * 256)));
+    int r = Math.round(Math.min(255, Math.max(0, pqh2RgbVal(p, q, h + (1.0f / 3.0f)) * 256)));
+    int g = Math.round(Math.min(255, Math.max(0, pqh2RgbVal(p, q, h) * 256)));
+    int b = Math.round(Math.min(255, Math.max(0, pqh2RgbVal(p, q, h - (1.0f / 3.0f)) * 256)));
 
     // noinspection UnnecessaryLocalVariable
-    int[] array = {r, g, b};
+    int[] array = {r, g, b, (int) (alpha * 255)};
     return array;
   }
 
-  private static float HueToRGB(float p, float q, float h) {
+  private static float pqh2RgbVal(float p, float q, float h) {
     if (h < 0)
       h += 1;
 
