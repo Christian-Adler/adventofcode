@@ -1,33 +1,31 @@
 public class Task {
 
-    public void init() {
-    }
+  public void init() {
+  }
 
-    public void addLine(String input) {
-    }
+  public void addLine(String input) {
+  }
 
-    public void afterParse() {
-    }
+  public void afterParse() {
+  }
 
-    public void out(Object... str) {
-        Util.out(str);
-    }
-	
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
+  public void out(Object... str) {
+    Util.out(str);
+  }
 
-        return builder.toString();
-    }
+  @Override
+  public String toString() {
+    return toStringConsole();
+  }
 
-    public String toStringSVG() {
-           SVG svg = new SVG();
-		   return svg.toSVGStringAged();
-    }
-	
-	
-    public String toStringConsole() {
-        SVG svg = new SVG();
-        return svg.toConsoleString();
-    }
+  public String toStringSVG() {
+    Img img = new Img();
+    return img.toSVGStringAged();
+  }
+
+
+  public String toStringConsole() {
+    Img img = new Img();
+    return img.toConsoleString();
+  }
 }

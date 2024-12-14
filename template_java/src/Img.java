@@ -1,29 +1,61 @@
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 
-public class SVG {
+public class Img {
   int xMin = Integer.MAX_VALUE;
   int yMin = Integer.MAX_VALUE;
   int xMax = Integer.MIN_VALUE;
   int yMax = Integer.MIN_VALUE;
-  List<Pos> positions = new ArrayList<>();
+  Set<Vec> positions = new LinkedHashSet<>();
 
-  void add(Pos pos) {
-    add(pos, null);
+  void add(Vec vec) {
+    add(vec, null);
   }
 
-  void add(Pos pos, String color) {
-    int x = pos.x;
-    int y = pos.y;
+  @SuppressWarnings("SameParameterValue")
+  void add(Vec vec, Object color) {
+    int x = vec.x;
+    int y = vec.y;
     this.xMax = Math.max(this.xMax, x);
     this.xMin = Math.min(this.xMin, x);
     this.yMax = Math.max(this.yMax, y);
     this.yMin = Math.min(this.yMin, y);
 
-    Pos p = new Pos(x, y, color != null ? color : pos.color);
+    Vec p = new Vec(x, y, color != null ? color : vec.color);
 
     positions.add(p);
+  }
+
+  public void writeBitmap() throws IOException {
+    writeBitmap(null);
+  }
+
+  public void writeBitmap(String path) throws IOException {
+    int width = xMax - xMin;
+    int height = yMax - yMin;
+    BufferedImage img = new BufferedImage(width + 1, height + 1, BufferedImage.TYPE_INT_RGB);
+    for (Vec vec : positions) {
+      int yIdx = vec.y - this.yMin;
+      int xIdx = vec.x - this.xMin;
+
+      // bitmap needs int
+      int rgb = Color.RED.getRGB();
+      if (vec.color instanceof Color col)
+        rgb = col.getRGB();
+      if (vec.color instanceof Integer i)
+        rgb = i;
+
+      img.setRGB(xIdx, yIdx, rgb);
+    }
+    ImageIO.write(img, "bmp", new File(path == null ? "./img.bmp" : path));
   }
 
   String toConsoleString() {
@@ -36,13 +68,14 @@ public class SVG {
       }
     }
 
-    for (Pos pos : positions) {
-      int yIdx = pos.y - this.yMin;
-      int xIdx = pos.x - this.xMin;
+    for (Vec vec : positions) {
+      int yIdx = vec.y - this.yMin;
+      int xIdx = vec.x - this.xMin;
 
       String c = "#";
-      if (pos.color != null && !pos.color.isEmpty())
-        c = pos.color.substring(0, 1);
+      if (vec.color instanceof String cStr && !cStr.isEmpty())
+        c = cStr.substring(0, 1);
+
       console.get(yIdx).set(xIdx, c);
     }
 
@@ -77,18 +110,20 @@ public class SVG {
     res.append("<g transform=\"translate(1,1)\">\r\n");
 
     int count = 0;
-    for (Pos pos : positions) {
-      String rgb = "#ff0000";
-      if (pos.color != null)
-        rgb = pos.color;
-      else {
+    for (Vec vec : positions) {
+      String rgb; // = "#ff0000";
+      if (vec.color instanceof String strCol) {
+        rgb = strCol;
+      } else if (vec.color instanceof Color color) {
+        rgb = "#" + String.format("%02X", (0xFF & color.getRed())) + String.format("%02X", (0xFF & color.getGreen())) + String.format("%02X", (0xFF & color.getBlue()));
+      } else {
         float h = startH + count * stepH;
         float s = startS + count * stepS;
         float l = startL + count * stepL;
         rgb = HSLtoRGB(h, s, l);
       }
       count++;
-      res.append("<rect style=\"fill:").append(rgb).append(";\" width=\"1\" height=\"1\" x=\"").append(pos.x - this.xMin).append("\" y=\"").append(pos.y - this.yMin).append("\" />\r\n");
+      res.append("<rect style=\"fill:").append(rgb).append(";\" width=\"1\" height=\"1\" x=\"").append(vec.x - this.xMin).append("\" y=\"").append(vec.y - this.yMin).append("\" />\r\n");
     }
     res.append("</g>\r\n");
     res.append("</svg>\r\n");
@@ -102,8 +137,14 @@ public class SVG {
     res.append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"").append(this.xMax - this.xMin + 3).append("\" height=\"").append(this.yMax - this.yMin + 3).append("\">\r\n");
     res.append("<rect style=\"fill:#000000;\" width=\"").append(this.xMax - this.xMin + 3).append("\" height=\"").append(this.yMax - this.yMin + 3).append("\" x=\"0\" y=\"0\" />\r\n");
     res.append("<g transform=\"translate(1,1)\">\r\n");
-    for (Pos pos : positions) {
-      res.append("<rect style=\"fill:").append(pos.color).append(";\" width=\"1\" height=\"1\" x=\"").append(pos.x - this.xMin).append("\" y=\"").append(pos.y - this.yMin).append("\" />\r\n");
+    for (Vec vec : positions) {
+      String rgb = "#ff0000";
+      if (vec.color instanceof String strCol) {
+        rgb = strCol;
+      } else if (vec.color instanceof Color color) {
+        rgb = "#" + String.format("%02X", (0xFF & color.getRed())) + String.format("%02X", (0xFF & color.getGreen())) + String.format("%02X", (0xFF & color.getBlue()));
+      }
+      res.append("<rect style=\"fill:").append(rgb).append(";\" width=\"1\" height=\"1\" x=\"").append(vec.x - this.xMin).append("\" y=\"").append(vec.y - this.yMin).append("\" />\r\n");
     }
     res.append("</g>\r\n");
     res.append("</svg>\r\n");
@@ -139,12 +180,12 @@ public class SVG {
   /**
    * Convert HSL values to a RGB Color.
    *
-   * @param h Hue is specified as degrees in the range 0 - 360.
-   * @param s Saturation is specified as a percentage in the range 1 - 100.
-   * @param l Luminance is specified as a percentage in the range 1 - 100.
-   * @paran alpha  the alpha value between 0 - 1
-   * adapted from https://svn.codehaus.org/griffon/builders/gfxbuilder/tags/GFXBUILDER_0.2/
-   * gfxbuilder-core/src/main/com/camick/awt/HSLColor.java
+   * @param h     Hue is specified as degrees in the range 0 - 360.
+   * @param s     Saturation is specified as a percentage in the range 1 - 100.
+   * @param l     Luminance is specified as a percentage in the range 1 - 100.
+   * @param alpha the alpha value between 0 - 1
+   *              adapted from <a href="https://svn.codehaus.org/griffon/builders/gfxbuilder/tags/GFXBUILDER_0.2/">...</a>
+   *              gfxbuilder-core/src/main/com/camick/awt/HSLColor.java
    */
   public static int[] HSLtoRGB(float h, float s, float l, float alpha) {
     if (s < 0.0f || s > 100.0f) {
@@ -169,7 +210,7 @@ public class SVG {
     s /= 100f;
     l /= 100f;
 
-    float q = 0;
+    float q;
 
     if (l < 0.5)
       q = l * (1 + s);
@@ -182,6 +223,7 @@ public class SVG {
     int g = Math.round(Math.min(255, Math.max(0, HueToRGB(p, q, h) * 256)));
     int b = Math.round(Math.min(255, Math.max(0, HueToRGB(p, q, h - (1.0f / 3.0f)) * 256)));
 
+    // noinspection UnnecessaryLocalVariable
     int[] array = {r, g, b};
     return array;
   }
