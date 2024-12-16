@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -50,19 +51,23 @@ public class Task {
 
     openList.add(new WorkItem(start, Vec.RIGHT, 0));
 
-    WorkItem targetReached = null;
+    List<WorkItem> targetReached = new ArrayList<>();
     long count = 0;
     while (!openList.isEmpty()) {
       count++;
       // if (count % 10000 == 0)
-      //   out(count, openList.size(), minPoints);
+      // out(count, openList.size());
       WorkItem workItem = openList.poll();
       if (workItem == null)
         throw new IllegalStateException("null!");
       if (workItem.pos.equals(end)) {
         minPoints = workItem.soFarPoints;
-        targetReached = workItem;
-        break;
+        targetReached.add(workItem);
+
+        out("Part 1", "min points", minPoints); //
+
+        // break;
+        // no break because of part 2
       }
 
       closedList.add(workItem);
@@ -100,30 +105,85 @@ public class Task {
         long stepCosts = Math.abs(next) > 0 ? 1000 : 1;
 
         long tentativeG = workItem.soFarPoints + stepCosts;
+        if (minPoints >= 0 && tentativeG > minPoints)
+          continue;
 
         WorkItem nextWorkItemWouldBe = new WorkItem(nextPosWouldBe, nextDir, tentativeG);
-        nextWorkItemWouldBe.predecessor = workItem;
-        if (closedList.contains(nextWorkItemWouldBe))
+
+        if (closedList.contains(nextWorkItemWouldBe)) {
+          for (WorkItem closedItem : closedList) {
+            if (closedItem.soFarPoints == nextWorkItemWouldBe.soFarPoints && next == 0) {
+              closedItem.predecessors.add(workItem);
+              // out("found new path");
+            }
+          }
           continue;
+        }
+
+        nextWorkItemWouldBe.predecessors.add(workItem);
 
         WorkItem alreadyInList = openList.stream().filter(w -> w.equals(nextWorkItemWouldBe)).findFirst().orElse(null);
-        if (alreadyInList != null && tentativeG >= alreadyInList.soFarPoints)
+        if (alreadyInList != null && tentativeG > alreadyInList.soFarPoints)
           continue;
+        if (alreadyInList != null && tentativeG == alreadyInList.soFarPoints) {
+          alreadyInList.predecessors.addAll(nextWorkItemWouldBe.predecessors);
+          continue;
+        }
 
         openList.remove(alreadyInList);
         openList.add(nextWorkItemWouldBe);
       }
     }
 
-    out("Part 1", "min points", minPoints); //
+    Set<Vec> atLeastOne = new HashSet<>();
 
     Img img = new Img();
-    WorkItem actWorkItem = targetReached;
-    while (actWorkItem != null) {
-      img.add(actWorkItem.pos);
-      actWorkItem = actWorkItem.predecessor;
+    for (Vec wall : walls) {
+      img.add(wall, Color.GRAY);
+    }
+
+    int count2 = 0;
+    for (WorkItem workItem : targetReached) {
+      List<WorkItem> workList = new ArrayList<>();
+      workList.add(workItem);
+      while (!workList.isEmpty()) {
+        count2++;
+        if (count2 > 1000)
+          break;
+        out("worklist size", workList.size());
+        WorkItem actWorkItem = workList.removeFirst();
+        atLeastOne.add(actWorkItem.pos);
+        img.add(actWorkItem.pos, Color.green);
+        // if (actWorkItem.pos.equals(start))
+        //   continue;
+        // workList.addAll(actWorkItem.predecessors);
+        if (!actWorkItem.predecessors.isEmpty())
+          workList.add(actWorkItem.predecessors.getFirst());
+        // for (WorkItem predecessor : actWorkItem.predecessors) {
+        //   // if (checkForConnectedStart(predecessor))
+        //   // workList.add(predecessor);
+        //   // else
+        //   //   out("No start connection");
+        // }
+      }
     }
     Util.writeToFile(img.toSVGStringAged(), "./svg.svg");
+
+    out("Part 2", atLeastOne.size()); // < 552  ->  545 (eine Sackgasse zu viel warum?)
+  }
+
+  private boolean checkForConnectedStart(WorkItem workItem) {
+    if (workItem.pos.equals(start))
+      return true;
+    List<WorkItem> workList = new ArrayList<>(workItem.predecessors);
+    while (!workList.isEmpty()) {
+      WorkItem checkItem = workList.removeFirst();
+      if (checkItem.pos.equals(start))
+        return true;
+      // workList.addAll(checkItem.predecessors);
+      workList.add(checkItem.predecessors.getFirst());
+    }
+    return false;
   }
 
   public void out(Object... str) {
@@ -155,7 +215,7 @@ public class Task {
     Vec pos;
     Vec direction;
     long soFarPoints;
-    WorkItem predecessor = null;
+    List<WorkItem> predecessors = new ArrayList<>();
 
     public WorkItem(Vec pos, Vec direction, long soFarPoints) {
       this.pos = pos;
@@ -180,7 +240,7 @@ public class Task {
 
     @Override
     public int hashCode() {
-      return Objects.hash(pos, direction, soFarPoints);
+      return Objects.hash(pos, direction);
     }
 
   }

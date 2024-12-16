@@ -7,8 +7,9 @@ import java.util.stream.Stream;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-    runForInput("./input_example_1.txt");
-    runForInput("./input_example_2.txt");
+    // runForInput("./input_example_1.txt");
+    // runForInput("./input_example_2.txt");
+    // runForInput("./input_example_3.txt");
     runForInput("./input.txt");
   }
 
