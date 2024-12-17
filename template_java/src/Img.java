@@ -8,18 +8,19 @@ import java.util.*;
 
 
 public class Img {
-  int xMin = Integer.MAX_VALUE;
-  int yMin = Integer.MAX_VALUE;
-  int xMax = Integer.MIN_VALUE;
-  int yMax = Integer.MIN_VALUE;
-  List<Vec> imgPositions = new LinkedList<>();
+  private int xMin = Integer.MAX_VALUE;
+  private int yMin = Integer.MAX_VALUE;
+  private int xMax = Integer.MIN_VALUE;
+  private int yMax = Integer.MIN_VALUE;
+  private final List<Vec> imgPositions = new LinkedList<>();
+  private int numPosWithoutColor = 0;
 
-  void add(Vec vec) {
+  public void add(Vec vec) {
     add(vec, null);
   }
 
   @SuppressWarnings("SameParameterValue")
-  void add(Vec vec, Object color) {
+  public void add(Vec vec, Object color) {
     int x = vec.x;
     int y = vec.y;
     this.xMax = Math.max(this.xMax, x);
@@ -28,6 +29,8 @@ public class Img {
     this.yMin = Math.min(this.yMin, y);
 
     Vec p = new Vec(x, y, color != null ? color : vec.color);
+    if (p.color == null)
+      numPosWithoutColor++;
 
     imgPositions.add(p);
   }
@@ -47,7 +50,7 @@ public class Img {
   public void writeBitmap(String path, boolean aged) throws IOException {
     Set<Vec> positions = getPaintPositions();
 
-    int steps = positions.size(); // Anzahl schritte aus Task ...
+    int steps = Math.max(1, numPosWithoutColor);
     int width = Math.max(xMax - xMin, 2);
     int height = Math.max(yMax - yMin, 2);
     int count = 0;
@@ -64,10 +67,10 @@ public class Img {
         rgb = i;
       else if (aged) {
         rgb = getAgedColor(count, steps).getRGB();
+        count++;
       }
 
       img.setRGB(xIdx, yIdx, rgb);
-      count++;
     }
     ImageIO.write(img, "bmp", new File(path == null ? "./img.bmp" : path));
   }
@@ -106,7 +109,7 @@ public class Img {
 
   String toSVGStringAged() {
     Set<Vec> positions = getPaintPositions();
-    int steps = positions.size(); // Anzahl schritte aus Task...
+    int steps = Math.max(1, numPosWithoutColor);
 
     StringBuilder res = new StringBuilder("\r\n");
 
@@ -122,14 +125,15 @@ public class Img {
       } else if (vec.color instanceof Color color) {
         rgb = "#" + String.format("%02X", (0xFF & color.getRed())) + String.format("%02X", (0xFF & color.getGreen())) + String.format("%02X", (0xFF & color.getBlue()));
       } else {
-        rgb = color2Hex(getAgedColor(count, steps));
+        Color agedColor = getAgedColor(count, steps);
+        rgb = color2Hex(agedColor);
+        count++;
       }
-      count++;
       res.append("<rect style=\"fill:").append(rgb).append(";\" width=\"1\" height=\"1\" x=\"").append(vec.x - this.xMin).append("\" y=\"").append(vec.y - this.yMin).append("\" />\r\n");
     }
     res.append("</g>\r\n");
     res.append("</svg>\r\n");
-
+    
     return res.toString();
   }
 
