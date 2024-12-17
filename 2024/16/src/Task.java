@@ -1,17 +1,12 @@
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 public class Task {
-  private Set<Vec> walls = new HashSet<>();
+  private final Set<Vec> walls = new HashSet<>();
   private Vec start;
   private Vec end;
-  private Vec startDir = Vec.RIGHT;
+  private final Vec startDir = Vec.RIGHT;
 
   private static final int POINTS_ROTATE = 1000;
   private static final int POINTS_STEP = 1;
@@ -26,12 +21,11 @@ public class Task {
     ArrayList<String> in = Util.str2List(input);
     for (int x = 0; x < in.size(); x++) {
       String i = in.get(x);
-      if (i.equals("#"))
-        walls.add(new Vec(x, maxY));
-      else if (i.equals("S"))
-        start = new Vec(x, maxY);
-      else if (i.equals("E"))
-        end = new Vec(x, maxY);
+      switch (i) {
+        case "#" -> walls.add(new Vec(x, maxY));
+        case "S" -> start = new Vec(x, maxY);
+        case "E" -> end = new Vec(x, maxY);
+      }
     }
   }
 
@@ -49,7 +43,7 @@ public class Task {
     PriorityQueue<WorkItem> openList = new PriorityQueue<>(Comparator.comparingLong(WorkItem::score));
     Set<WorkItem> closedList = new HashSet<>();
 
-    openList.add(new WorkItem(start, Vec.RIGHT, 0));
+    openList.add(new WorkItem(start, startDir, 0));
 
     List<WorkItem> targetReached = new ArrayList<>();
     long count = 0;
@@ -67,7 +61,7 @@ public class Task {
         out("Part 1", "min points", minPoints); //
 
         // break;
-        // no break because of part 2
+        // no break because of part 2 - find all shortest path
       }
 
       closedList.add(workItem);
@@ -88,14 +82,12 @@ public class Task {
           nextDir = workItem.direction;
           if (walls.contains(nextPosWouldBe))
             continue;
-        }
-        else if (next == -1) {
+        } else if (next == -1) {
           nextPosWouldBe = workItem.pos.copy();
           nextDir = workItem.direction.rotate90DegToNew(true);
           if (walls.contains(nextPosWouldBe.addToNew(nextDir)))
             continue;
-        }
-        else if (next == 1) {
+        } else if (next == 1) {
           nextPosWouldBe = workItem.pos.copy();
           nextDir = workItem.direction.rotate90DegToNew(false);
           if (walls.contains(nextPosWouldBe.addToNew(nextDir)))
@@ -112,7 +104,7 @@ public class Task {
 
         if (closedList.contains(nextWorkItemWouldBe)) {
           for (WorkItem closedItem : closedList) {
-            if (closedItem.soFarPoints == nextWorkItemWouldBe.soFarPoints && next == 0) {
+            if (closedItem.pos.equals(nextWorkItemWouldBe.pos) && closedItem.soFarPoints == nextWorkItemWouldBe.soFarPoints && next == 0) {
               closedItem.predecessors.add(workItem);
               // out("found new path");
             }
@@ -142,34 +134,20 @@ public class Task {
       img.add(wall, Color.GRAY);
     }
 
-    int count2 = 0;
     for (WorkItem workItem : targetReached) {
       List<WorkItem> workList = new ArrayList<>();
       workList.add(workItem);
       while (!workList.isEmpty()) {
-        count2++;
-        if (count2 > 1000)
-          break;
-        out("worklist size", workList.size());
         WorkItem actWorkItem = workList.removeFirst();
-        atLeastOne.add(actWorkItem.pos);
-        img.add(actWorkItem.pos, Color.green);
-        // if (actWorkItem.pos.equals(start))
-        //   continue;
-        // workList.addAll(actWorkItem.predecessors);
-        if (!actWorkItem.predecessors.isEmpty())
-          workList.add(actWorkItem.predecessors.getFirst());
-        // for (WorkItem predecessor : actWorkItem.predecessors) {
-        //   // if (checkForConnectedStart(predecessor))
-        //   // workList.add(predecessor);
-        //   // else
-        //   //   out("No start connection");
-        // }
+        if (atLeastOne.add(actWorkItem.pos)) {
+          img.add(actWorkItem.pos);
+        }
+        workList.addAll(actWorkItem.predecessors);
       }
     }
     Util.writeToFile(img.toSVGStringAged(), "./svg.svg");
 
-    out("Part 2", atLeastOne.size()); // < 552  ->  545 (eine Sackgasse zu viel warum?)
+    out("Part 2", "best path seats", atLeastOne.size());
   }
 
   private boolean checkForConnectedStart(WorkItem workItem) {
@@ -215,7 +193,7 @@ public class Task {
     Vec pos;
     Vec direction;
     long soFarPoints;
-    List<WorkItem> predecessors = new ArrayList<>();
+    final List<WorkItem> predecessors = new ArrayList<>();
 
     public WorkItem(Vec pos, Vec direction, long soFarPoints) {
       this.pos = pos;
