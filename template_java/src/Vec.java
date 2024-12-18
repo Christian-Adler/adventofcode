@@ -25,6 +25,14 @@ public class Vec {
    */
   Object color = null;
 
+  public Vec(String input) {
+    int[] arr = Arrays.stream(input.split(",")).mapToInt(Integer::parseInt).toArray();
+    if (arr.length != 2)
+      throw new IllegalArgumentException("Unexpected input");
+    x = arr[0];
+    y = arr[1];
+  }
+
   public Vec(int x, int y) {
     this.x = x;
     this.y = y;
@@ -54,6 +62,10 @@ public class Vec {
 
   Vec copy() {
     return new Vec(x, y, color);
+  }
+
+  public boolean isInRect(int minX, int minY, int maxX, int maxY) {
+    return x >= minX && x <= maxX && y >= minY && y <= maxY;
   }
 
   /**
@@ -102,8 +114,10 @@ public class Vec {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
     Vec vec = (Vec) o;
     return x == vec.x && y == vec.y;
   }
