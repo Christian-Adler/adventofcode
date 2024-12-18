@@ -7,7 +7,7 @@ public class InstJNZ extends Instruction {
 
   @Override
   protected void execImpl() {
-    int a = computer.getRegA();
+    long a = computer.getRegA();
     if (a == 0) {
       super.updateInstructionPointer();
       return;

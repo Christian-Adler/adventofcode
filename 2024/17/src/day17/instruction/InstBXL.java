@@ -7,7 +7,7 @@ public class InstBXL extends Instruction {
 
   @Override
   protected void execImpl() {
-    int res = computer.getRegB() ^ getLiteralOperandValue();
+    long res = computer.getRegB() ^ getLiteralOperandValue();
     computer.setRegB(res);
   }
 }

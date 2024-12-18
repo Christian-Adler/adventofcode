@@ -7,9 +7,9 @@ public class InstBDV extends Instruction {
 
   @Override
   protected void execImpl() {
-    int numerator = computer.getRegA();
+    long numerator = computer.getRegA();
     double denominator = Math.pow(2, getComboOperandValue(getOperand()));
-    int res = (int) (numerator / denominator);
+    long res = (long) (numerator / denominator);
     computer.setRegB(res);
   }
 }

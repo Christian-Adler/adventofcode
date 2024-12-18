@@ -7,7 +7,7 @@ public class InstBST extends Instruction {
 
   @Override
   protected void execImpl() {
-    int res = getComboOperandValue() % 8;
+    long res = getComboOperandValue() % 8;
     computer.setRegB(res);
   }
 }

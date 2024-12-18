@@ -3,10 +3,10 @@ package day17.instruction;
 import day17.Computer;
 
 public abstract class Instruction {
-  public final int OPCODE;
+  public final long OPCODE;
   protected Computer computer;
 
-  public Instruction(int opcode) {
+  public Instruction(long opcode) {
     OPCODE = opcode;
   }
 
@@ -14,15 +14,15 @@ public abstract class Instruction {
     this.computer = computer;
   }
 
-  protected int getLiteralOperandValue() {
+  protected long getLiteralOperandValue() {
     return getOperand();
   }
 
-  protected int getComboOperandValue() {
+  protected long getComboOperandValue() {
     return getComboOperandValue(getOperand());
   }
 
-  protected int getComboOperandValue(int operand) {
+  protected long getComboOperandValue(long operand) {
     if (operand <= 3) return operand;
     if (operand == 4) return computer.getRegA();
     if (operand == 5) return computer.getRegB();
@@ -30,7 +30,7 @@ public abstract class Instruction {
     throw new IllegalStateException("Non valid program: operand 7");
   }
 
-  protected int getOperand() {
+  protected long getOperand() {
     return computer.getOperand();
   }
 

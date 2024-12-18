@@ -6,82 +6,87 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Computer {
-  private int regA = 0;
-  private int regB = 0;
-  private int regC = 0;
-  private List<Integer> program = new ArrayList<>();
-  private int instructionPointer = 0;
-  private final List<Integer> output = new ArrayList<>();
+  private long regA = 0;
+  private long regB = 0;
+  private long regC = 0;
+  private List<Long> program = new ArrayList<>();
+  private long instructionPointer = 0;
+  private final List<Long> output = new ArrayList<>();
 
-  private static final Map<Integer, Instruction> instructionMap = new HashMap<>();
+  private final Map<Long, Instruction> instructionMap = new HashMap<>();
 
-  static {
+
+  public Computer() {
     for (Instruction instruction : Arrays.asList(new InstADV(), new InstBXL(), new InstBST(), new InstJNZ(), new InstBXC(), new InstOUT(), new InstBDV(), new InstCDV())) {
       instructionMap.put(instruction.OPCODE, instruction);
     }
-  }
-
-  public Computer() {
     instructionMap.values().forEach(i -> i.setComputer(this));
   }
 
-  public void setRegA(int regA) {
+  public void setRegA(long regA) {
     this.regA = regA;
   }
 
-  public void setRegB(int regB) {
+  public void setRegB(long regB) {
     this.regB = regB;
   }
 
-  public void setRegC(int regC) {
+  public void setRegC(long regC) {
     this.regC = regC;
   }
 
-  public int getRegA() {
+  public long getRegA() {
     return regA;
   }
 
-  public int getRegB() {
+  public long getRegB() {
     return regB;
   }
 
-  public int getRegC() {
+  public long getRegC() {
     return regC;
   }
 
-  public int getOpcode() {
-    return program.get(instructionPointer);
+  public long getOpcode() {
+    return program.get((int) instructionPointer);
   }
 
-  public int getOperand() {
-    return program.get(instructionPointer + 1);
+  public long getOperand() {
+    return program.get((int) (instructionPointer + 1));
   }
 
-  public int getInstructionPointer() {
+  public long getInstructionPointer() {
     return instructionPointer;
   }
 
-  public void setInstructionPointer(int instructionPointer) {
+  public void setInstructionPointer(long instructionPointer) {
     this.instructionPointer = instructionPointer;
   }
 
-  public void setProgram(List<Integer> program) {
+  public void setProgram(List<Long> program) {
     this.program = program;
   }
 
-  public void addOutput(int val) {
+  public void addOutput(long val) {
+
     output.add(val);
+    // if (getProgramInstruction(program).startsWith(getProgramInstruction(output)))
+    //   System.out.println(this);
   }
 
   public String run() {
     // System.out.println(this);
     while (instructionPointer < program.size()) {
-      Instruction instruction = instructionMap.get(program.get(instructionPointer));
+      Instruction instruction = instructionMap.get(program.get((int) instructionPointer));
       instruction.exec();
       // System.out.println(this);
     }
     // System.out.println(output);
-    return output.stream().map(String::valueOf).collect(Collectors.joining(","));
+    return getProgramInstruction(output);
+  }
+
+  public static String getProgramInstruction(List<Long> list) {
+    return list.stream().map(String::valueOf).collect(Collectors.joining(","));
   }
 
 

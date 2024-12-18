@@ -15,6 +15,8 @@ public class Main {
     // runForInput("./input_example_0_3.txt");
     // runForInput("./input_example_0_4.txt");
     // runForInput("./input_example_0_5.txt");
+    // runForInput("./input_example_0_6.txt");
+    // runForInput("./input_example_0_7.txt");
     runForInput("./input.txt");
   }
 

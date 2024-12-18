@@ -7,7 +7,7 @@ public class InstOUT extends Instruction {
 
   @Override
   protected void execImpl() {
-    int res = getComboOperandValue() % 8;
+    long res = getComboOperandValue() % 8;
     computer.addOutput(res);
   }
 }

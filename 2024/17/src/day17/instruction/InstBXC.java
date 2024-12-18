@@ -7,7 +7,7 @@ public class InstBXC extends Instruction {
 
   @Override
   protected void execImpl() {
-    int res = computer.getRegB() ^ computer.getRegC();
+    long res = computer.getRegB() ^ computer.getRegC();
     computer.setRegB(res);
   }
 }
