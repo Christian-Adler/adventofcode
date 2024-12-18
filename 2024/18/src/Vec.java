@@ -1,9 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Vec {
   public static final Vec DOWN = new Vec(0, 1);
@@ -67,6 +62,10 @@ public class Vec {
 
   Vec copy() {
     return new Vec(x, y, color);
+  }
+
+  public boolean isInRect(int minX, int minY, int maxX, int maxY) {
+    return x >= minX && x <= maxX && y >= minY && y <= maxY;
   }
 
   /**
