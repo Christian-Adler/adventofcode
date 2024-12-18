@@ -29,6 +29,7 @@ hs_err_pid*
 # generated images
 img.bmp
 svg.svg
+svg_*.svg
 
 # tpl copy
 tplcopy
