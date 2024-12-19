@@ -1,3 +1,5 @@
+package aoc.util;
+
 import java.util.*;
 
 public class Vec {

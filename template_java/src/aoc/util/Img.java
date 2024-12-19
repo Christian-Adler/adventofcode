@@ -1,3 +1,5 @@
+package aoc.util;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -75,7 +77,7 @@ public class Img {
     ImageIO.write(img, "bmp", new File(path == null ? "./img.bmp" : path));
   }
 
-  String toConsoleString() {
+  public String toConsoleString() {
     Set<Vec> positions = getPaintPositions();
     List<List<String>> console = new ArrayList<>();
     for (int y = 0; y <= yMax - yMin; y++) {
@@ -107,7 +109,7 @@ public class Img {
   }
 
 
-  String toSVGStringAged() {
+  public String toSVGStringAged() {
     Set<Vec> positions = getPaintPositions();
     int steps = Math.max(1, numPosWithoutColor);
 
@@ -133,7 +135,7 @@ public class Img {
     }
     res.append("</g>\r\n");
     res.append("</svg>\r\n");
-    
+
     return res.toString();
   }
 
