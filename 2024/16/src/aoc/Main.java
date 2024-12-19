@@ -1,3 +1,5 @@
+package aoc;
+
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -17,7 +19,6 @@ public class Main {
     System.out.println("\r\nInput: " + inputFileName);
 
     Task task = new Task();
-    // Task2 task = new Task2();
     task.init();
 
     Instant t1 = Instant.now();
@@ -25,7 +26,7 @@ public class Main {
     try (Stream<String> lines = Files.lines(new File(inputFileName).toPath(), StandardCharsets.UTF_8)) {
       lines.forEach(task::addLine);
     }
-
+    
     task.afterParse();
 
     Instant t2 = Instant.now();
