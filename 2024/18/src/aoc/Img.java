@@ -1,3 +1,5 @@
+package aoc;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -133,7 +135,7 @@ public class Img {
     }
     res.append("</g>\r\n");
     res.append("</svg>\r\n");
-    
+
     return res.toString();
   }
 

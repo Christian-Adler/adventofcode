@@ -1,6 +1,14 @@
+package aoc;
+
+import aoc.astar.AStar;
+import aoc.astar.AStarItem;
+import aoc.astar.AStarNextItem;
+
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Objects;
 
 public class Task {
   private final List<Vec> obstacles = new ArrayList<>();
@@ -21,15 +29,15 @@ public class Task {
     // out(toStringConsole());
 
     // part 1
-    WorkItem targetReached = findShortestPath(fallingBytes);
+    AStarItem<Vec> targetReached = findShortestPath(fallingBytes);
 
-    out("Part 1", "min points", targetReached.soFarPoints); //
+    out("Part 1", "min points", targetReached.score); //
 
     Img img = new Img();
-    WorkItem actWorkItem = targetReached;
+    AStarItem<Vec> actWorkItem = targetReached;
     while (actWorkItem != null) {
-      img.add(actWorkItem.pos);
-      actWorkItem = actWorkItem.predecessor;
+      img.add(actWorkItem.item);
+      actWorkItem = actWorkItem.getPredecessor();
     }
     Util.writeToFile(img.toSVGStringAged(), "./svg_1.svg");
 
@@ -47,7 +55,7 @@ public class Task {
       int avgSearchBetween = searchBetweenMin + (searchBetweenMax - searchBetweenMin) / 2;
       // out("search path for", avgSearchBetween);
 
-      WorkItem targetReached2 = findShortestPath(avgSearchBetween);
+      AStarItem<Vec> targetReached2 = findShortestPath(avgSearchBetween);
       if (targetReached2 == null)
         searchBetweenMax = avgSearchBetween;
       else {
@@ -60,8 +68,8 @@ public class Task {
     img = new Img();
     actWorkItem = targetReached;
     while (actWorkItem != null) {
-      img.add(actWorkItem.pos);
-      actWorkItem = actWorkItem.predecessor;
+      img.add(actWorkItem.item);
+      actWorkItem = actWorkItem.getPredecessor();
     }
 
     for (Vec vec : obstacles.subList(0, searchBetweenMin + 1)) {
@@ -71,63 +79,27 @@ public class Task {
     Util.writeToFile(img.toSVGStringAged(), "./svg_2.svg");
   }
 
-  private WorkItem findShortestPath(int fallenBytes) throws Exception {
+  private AStarItem<Vec> findShortestPath(int fallenBytes) throws Exception {
 
     HashSet<Vec> workObstacles = new HashSet<>(obstacles.subList(0, fallenBytes));
 
-    long minPoints = -1;
+    AStar<Vec> aStar = new AStar<>((vec, end) -> (long) vec.manhattanDistance(end), vec -> {
+      List<AStarNextItem<Vec>> nextItems = new ArrayList<>();
 
-    // https://de.wikipedia.org/wiki/A*-Algorithmus
-    PriorityQueue<WorkItem> openList = new PriorityQueue<>(Comparator.comparingLong(WorkItem::score));
-    Set<WorkItem> closedList = new HashSet<>();
-
-    openList.add(new WorkItem(start, 0));
-
-    WorkItem targetReached = null;
-    long count = 0;
-    while (!openList.isEmpty()) {
-      count++;
-      // if (count % 10000 == 0)
-      // out(count, openList.size(), minPoints);
-      WorkItem workItem = openList.poll();
-      if (workItem == null)
-        throw new IllegalStateException("null!");
-      if (workItem.pos.equals(end)) {
-        minPoints = workItem.soFarPoints;
-        targetReached = workItem;
-        break;
-      }
-
-      closedList.add(workItem);
-
-      // expand Node
       for (Vec dir : Vec.adjacent) {
-        Vec nextPosWouldBe = workItem.pos.addToNew(dir);
+        Vec nextPosWouldBe = vec.addToNew(dir);
         if (workObstacles.contains(nextPosWouldBe))
           continue;
         // borders?
         if (!nextPosWouldBe.isInRect(0, 0, end.x, end.y))
           continue;
-
-        long stepCosts = 1;
-
-        long tentativeG = workItem.soFarPoints + stepCosts;
-
-        WorkItem nextWorkItemWouldBe = new WorkItem(nextPosWouldBe, tentativeG);
-        nextWorkItemWouldBe.predecessor = workItem;
-        if (closedList.contains(nextWorkItemWouldBe))
-          continue;
-
-        WorkItem alreadyInList = openList.stream().filter(w -> w.equals(nextWorkItemWouldBe)).findFirst().orElse(null);
-        if (alreadyInList != null && tentativeG >= alreadyInList.soFarPoints)
-          continue;
-
-        openList.remove(alreadyInList);
-        openList.add(nextWorkItemWouldBe);
+        nextItems.add(new AStarNextItem<>(nextPosWouldBe, 1));
       }
-    }
 
-    return targetReached;
+      return nextItems;
+    });
+
+    return aStar.findShortestPath(start, end);
   }
 
   public void out(Object... str) {

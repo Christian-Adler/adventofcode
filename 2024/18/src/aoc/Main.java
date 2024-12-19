@@ -1,3 +1,5 @@
+package aoc;
+
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
