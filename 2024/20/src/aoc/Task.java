@@ -53,32 +53,56 @@ public class Task {
       if (!foundNext) break;
     }
     ArrayList<Vec> path = new ArrayList<>(visited);
-    // out(path.size()); // size = picoseonds +1 because of start
+    out("not cheated path steps:", path.size() - 1); // size = picoseonds +1 because of start
 
     List<Cheat> possibleCheats = findAllPossibleCheats();
     // out(toStringConsole(possibleCheats));
     out("Num possible cheats", possibleCheats.size());
 
-    long numCheatsSaved100PS = 0;
-    // Map<Integer, Integer> saved2count = new HashMap<>();
-    for (Cheat possibleCheat : possibleCheats) {
-      Vec pathItem1 = possibleCheat.start().addToNew(possibleCheat.dir());
-      Vec pathItem2 = possibleCheat.start().addToNew(possibleCheat.dir().multToNew(-1));
+    long numCheatsSaved100PS = getNumCheatsSaved100PS(possibleCheats, path);
 
-      int idx1 = path.indexOf(pathItem1);
-      int idx2 = path.indexOf(pathItem2);
-      int savedTime = Math.abs(idx2 - idx1) - 2;
+    out("part 1", "numCheatsSaved100PS", numCheatsSaved100PS);
+
+
+    possibleCheats = findAllPossibleCheats20();
+    out("Num possible cheats", possibleCheats.size());
+
+    numCheatsSaved100PS = getNumCheatsSaved100PS(possibleCheats, path);
+
+    out("part 2", "numCheatsSaved100PS", numCheatsSaved100PS);
+  }
+
+  private long getNumCheatsSaved100PS(List<Cheat> possibleCheats, ArrayList<Vec> path) {
+    long numCheatsSaved100PS = 0;
+    Map<Integer, Integer> saved2count = new HashMap<>();
+    long maxCheatLen = 0;
+    for (Cheat possibleCheat : possibleCheats) {
+
+      int idx1 = path.indexOf(possibleCheat.start());
+      int idx2 = path.indexOf(possibleCheat.end());
+      int cheatLength = possibleCheat.len();
+      maxCheatLen = Math.max(maxCheatLen, cheatLength);
+      int normalPathLength = Math.abs(idx2 - idx1);
+      int savedTime = normalPathLength - cheatLength;
       // out("savedTime", savedTime);
 
-      // Integer soFar = saved2count.getOrDefault(savedTime, 0);
-      // saved2count.put(savedTime, soFar + 1);
+      Integer soFar = saved2count.getOrDefault(savedTime, 0);
 
-      if (savedTime >= 100)
-        numCheatsSaved100PS++;
+      if (savedTime >= 50) {
+        saved2count.put(savedTime, soFar + 1);
+        if (savedTime >= 100) {
+          numCheatsSaved100PS++;
+        }
+      }
     }
-
     // out(saved2count);
-    out("part 1", "numCheatsSaved100PS", numCheatsSaved100PS); // <5491
+    // out("max cheat len", maxCheatLen);
+    // out("count : saved");
+    // out("=============");
+    // for (Integer saved : saved2count.keySet().stream().sorted().toList()) {
+    //   out(saved2count.get(saved), ":", saved);
+    // }
+    return numCheatsSaved100PS;
   }
 
   private List<Cheat> findAllPossibleCheats() {
@@ -88,12 +112,40 @@ public class Task {
         continue;
 
       if (!walls.contains(wall.addToNew(Vec.UP)) && !walls.contains(wall.addToNew(Vec.DOWN))) {
-        result.add(new Cheat(wall.copy(), Vec.UP));
-        // result.add(new Cheat(wall.copy(), wall.addToNew(Vec.DOWN)));
+        result.add(new Cheat(wall.addToNew(Vec.DOWN), wall.addToNew(Vec.UP), 2));
       }
       if (!walls.contains(wall.addToNew(Vec.LEFT)) && !walls.contains(wall.addToNew(Vec.RIGHT))) {
-        result.add(new Cheat(wall.copy(), Vec.LEFT));
-        // result.add(new Cheat(wall.copy(), wall.addToNew(Vec.RIGHT)));
+        result.add(new Cheat(wall.addToNew(Vec.LEFT), wall.addToNew(Vec.RIGHT), 2));
+      }
+    }
+    return result;
+  }
+
+  private List<Cheat> findAllPossibleCheats20() {
+    Set<Cheat> result = new HashSet<>();
+    for (int y = 1; y < maxY; y++) {
+      for (int x = 1; x < maxX; x++) {
+        Vec start = new Vec(x, y);
+        if (!walls.contains(start)) {
+          result.addAll(findPathsThroughWalls(start));
+        }
+      }
+    }
+    return new ArrayList<>(result);
+  }
+
+  private Set<Cheat> findPathsThroughWalls(Vec start) {
+    Set<Cheat> result = new HashSet<>();
+    for (int x = start.x - 20; x <= start.x + 20; x++) {
+      for (int y = start.y - 20; y <= start.y + 20; y++) {
+        Vec next = new Vec(x, y);
+        if (next.isInRect(1, 1, maxX - 1, maxY - 1)) {
+          if (!walls.contains(next)) {
+            int manhattanDistance = start.manhattanDistance(next);
+            if (manhattanDistance > 1 && manhattanDistance <= 20)
+              result.add(new Cheat(start, next, manhattanDistance));
+          }
+        }
       }
     }
     return result;

@@ -9,7 +9,11 @@ import java.util.stream.Stream;
 
 public class Main {
   public static void main(String[] args) throws Exception {
-    runForInput("./input_example_1.txt");
+    // runForInput("./input_example_1.txt");
+    // runForInput("./input_example_2.txt");
+    // runForInput("./input_example_3.txt");
+    // runForInput("./input_example_4.txt");
+    // runForInput("./input_example_5.txt");
     runForInput("./input.txt");
   }
 
@@ -17,7 +21,6 @@ public class Main {
     System.out.println("\r\nInput: " + inputFileName);
 
     Task task = new Task();
-    // Task2 task = new Task2();
     task.init();
 
     Instant t1 = Instant.now();
