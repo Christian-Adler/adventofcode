@@ -4,6 +4,8 @@ import aoc.util.Img;
 import aoc.util.Util;
 import aoc.util.Vec;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
 
 public class Task {
@@ -14,6 +16,7 @@ public class Task {
   private Vec start = null;
   private Vec end = null;
 
+  private Cheat maxSavedTimeCheat20 = null;
 
   public void init() {
   }
@@ -70,12 +73,29 @@ public class Task {
     numCheatsSaved100PS = getNumCheatsSaved100PS(possibleCheats, path);
 
     out("part 2", "numCheatsSaved100PS", numCheatsSaved100PS);
+
+    Img img = new Img();
+    // for (Vec wall : walls) {
+    //   img.add(wall, Color.gray);
+    // }
+    for (Vec vec : path) {
+      img.add(vec);
+    }
+
+    List<Vec> cheatPath = maxSavedTimeCheat20.start().pathBetween(maxSavedTimeCheat20.end());
+    for (Vec vec : cheatPath) {
+      img.add(vec, Color.red.brighter());
+    }
+    img.add(start, Color.red);
+    img.add(end, Color.red);
+    Util.writeToFile(img.toSVGStringAged(), "./svg.svg");
   }
 
   private long getNumCheatsSaved100PS(List<Cheat> possibleCheats, ArrayList<Vec> path) {
     long numCheatsSaved100PS = 0;
     Map<Integer, Integer> saved2count = new HashMap<>();
     long maxCheatLen = 0;
+    long maxSavedTime = 0;
     for (Cheat possibleCheat : possibleCheats) {
 
       int idx1 = path.indexOf(possibleCheat.start());
@@ -85,6 +105,11 @@ public class Task {
       int normalPathLength = Math.abs(idx2 - idx1);
       int savedTime = normalPathLength - cheatLength;
       // out("savedTime", savedTime);
+      if (savedTime > maxSavedTime) {
+        maxSavedTime = savedTime;
+        // out("maxSavedTime", maxSavedTime, possibleCheat);
+        maxSavedTimeCheat20 = possibleCheat;
+      }
 
       Integer soFar = saved2count.getOrDefault(savedTime, 0);
 

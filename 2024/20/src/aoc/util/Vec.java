@@ -97,11 +97,11 @@ public class Vec {
   public List<Vec> pathBetween(Vec other) {
     List<Vec> path = new ArrayList<>();
     int maxDist = Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
-    int xStep = (other.x - x) / maxDist;
-    int yxStep = (other.y - y) / maxDist;
+    double xStep = (double) (other.x - x) / maxDist;
+    double yxStep = (double) (other.y - y) / maxDist;
 
     for (int i = 0; i <= maxDist; i++) {
-      Vec step = addToNew(i * xStep, i * yxStep);
+      Vec step = addToNew((int) (i * xStep), (int) (i * yxStep));
       if (!step.equals(this) && !step.equals(other))
         path.add(step);
     }
