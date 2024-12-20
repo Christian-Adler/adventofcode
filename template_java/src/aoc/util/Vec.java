@@ -20,12 +20,12 @@ public class Vec {
     adjacent8.addAll(adjacentDiagonal);
   }
 
-  int x;
-  int y;
+  public int x;
+  public int y;
   /**
    * color could be java.awt.Color or int or string
    */
-  Object color = null;
+  public Object color = null;
 
   public Vec(String input) {
     int[] arr = Arrays.stream(input.split(",")).mapToInt(Integer::parseInt).toArray();
@@ -45,24 +45,24 @@ public class Vec {
     this.color = color;
   }
 
-  void add(Vec add) {
+  public void add(Vec add) {
     this.x += add.x;
     this.y += add.y;
   }
 
-  Vec addToNew(int x, int y) {
+  public Vec addToNew(int x, int y) {
     return new Vec(this.x + x, this.y + y);
   }
 
-  Vec addToNew(Vec other) {
+  public Vec addToNew(Vec other) {
     return addToNew(other.x, other.y);
   }
 
-  Vec multToNew(int mult) {
+  public Vec multToNew(int mult) {
     return new Vec(this.x * mult, this.y * mult);
   }
 
-  Vec copy() {
+  public Vec copy() {
     return new Vec(x, y, color);
   }
 
@@ -76,7 +76,7 @@ public class Vec {
    * @param turnLeft - turn left or right
    */
   @SuppressWarnings("SuspiciousNameCombination")
-  Vec rotate90DegToNew(boolean turnLeft) {
+  public Vec rotate90DegToNew(boolean turnLeft) {
     if (turnLeft)
       return new Vec(-y, x);
     else
@@ -86,15 +86,15 @@ public class Vec {
   /**
    * <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">...</a>
    */
-  int manhattanDistance() {
+  public int manhattanDistance() {
     return Math.abs(x) + Math.abs(y);
   }
 
-  int manhattanDistance(Vec other) {
+  public int manhattanDistance(Vec other) {
     return Math.abs(x - other.x) + Math.abs(y - other.y);
   }
 
-  List<Vec> pathBetween(Vec other) {
+  public List<Vec> pathBetween(Vec other) {
     List<Vec> path = new ArrayList<>();
     int maxDist = Math.max(Math.abs(other.x - x), Math.abs(other.y - y));
     int xStep = (other.x - x) / maxDist;

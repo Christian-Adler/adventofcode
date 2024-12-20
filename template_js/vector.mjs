@@ -20,7 +20,8 @@ class Vector {
   draw(ctx) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, 0.5, 0, Math.PI * 2);
-    ctx.fillStyle = this.color;
+    if (this.color)				   
+      ctx.fillStyle = this.color;
     ctx.fill();
   }
 
