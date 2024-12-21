@@ -59,7 +59,6 @@ public class AStar<T> {
       // expand Node
       Collection<AStarNextItem<T>> nextItems = determineNextFnc.apply(workItem.item);
 
-
       for (AStarNextItem<T> nextItem : nextItems) {
         long tentativeG = workItem.score + nextItem.stepCosts();
 
@@ -113,5 +112,33 @@ public class AStar<T> {
     }
 
     return targetReached;
+  }
+
+  public List<T> getPath(AStarItem<T> item) {
+    List<T> path = new ArrayList<>();
+    AStarItem<T> pathItem = item;
+    while (pathItem != null) {
+      path.add(pathItem.item);
+      pathItem = pathItem.getPredecessor();
+    }
+    return path.reversed();
+  }
+
+  public List<List<T>> getAllPaths(AStarItem<T> item) {
+    List<List<T>> result = new ArrayList<>();
+    walkPaths(item, new ArrayList<>(), result);
+    return result;
+  }
+
+  private void walkPaths(AStarItem<T> item, List<T> soFarWalk, List<List<T>> result) {
+    soFarWalk.addFirst(item.item);
+    List<AStarItem<T>> predecessors = item.getPredecessors();
+    if (predecessors.isEmpty()) {
+      result.add(soFarWalk);
+    } else {
+      for (AStarItem<T> predecessor : predecessors) {
+        walkPaths(predecessor, new ArrayList<>(soFarWalk), result);
+      }
+    }
   }
 }
