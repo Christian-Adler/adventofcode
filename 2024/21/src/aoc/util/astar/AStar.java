@@ -114,7 +114,7 @@ public class AStar<T> {
     return targetReached;
   }
 
-  public List<T> getAllPath(AStarItem<T> item) {
+  public List<T> getPath(AStarItem<T> item) {
     List<T> path = new ArrayList<>();
     AStarItem<T> pathItem = item;
     while (pathItem != null) {

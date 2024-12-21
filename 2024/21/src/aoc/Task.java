@@ -24,17 +24,17 @@ public class Task {
     codes.add(input);
   }
 
-  public void afterParse() throws Exception {
+  public void afterParse() {
     long sumComplexity = getSumComplexity(2);
     out("Part 1", "sumComplexity", sumComplexity);
     sumComplexity = getSumComplexity(25);
     out("Part 2", "sumComplexity", sumComplexity);
   }
 
-  private long getSumComplexity(int nunRobots) {
+  private long getSumComplexity(int numRobots) {
     long sumComplexity = 0;
     for (String code : codes) {
-      long minLen = calcMinLen(code, nunRobots, numPad);
+      long minLen = calcMinLen(code, numRobots, numPad);
       int codeNumericPart = Integer.parseInt(code.replace("A", ""));
       long complexity = (long) codeNumericPart * minLen;
       // out(codeNumericPart, "*", minLen, "=", complexity);
@@ -54,6 +54,9 @@ public class Task {
     String prevC = "A";
     for (String c : Util.str2List(code)) {
       // out(c);
+
+      // optimal path in one level might not be optimal for next level
+      // -> calc all shortest paths and calc min recursive.
       List<String> paths = keypad.findShortestPaths(prevC, c);
       if (depth == 0)
         len += paths.getFirst().length() + 1; // +1 for Press = A after path
