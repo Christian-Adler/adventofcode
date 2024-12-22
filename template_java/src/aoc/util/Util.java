@@ -30,19 +30,19 @@ public class Util {
   }
 
   public static String leftPad(Object input, int length, String padStr) {
-    StringBuilder builder = new StringBuilder(input.toString());
-    int padLength = length - input.toString().length();
-    if (padLength > 0)
-      builder.append(padStr.repeat(padLength));
-    return builder.toString();
-  }
-
-  public static String rightPad(Object input, int length, String padStr) {
     StringBuilder builder = new StringBuilder();
     int padLength = length - input.toString().length();
     if (padLength > 0)
       builder.append(padStr.repeat(padLength));
     builder.append(input);
+    return builder.toString();
+  }
+
+  public static String rightPad(Object input, int length, String padStr) {
+    StringBuilder builder = new StringBuilder(input.toString());
+    int padLength = length - input.toString().length();
+    if (padLength > 0)
+      builder.append(padStr.repeat(padLength));
     return builder.toString();
   }
 
