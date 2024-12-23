@@ -114,4 +114,14 @@ public class Util {
 
     return primeFactorsMap;
   }
+
+  public static ArrayList<Integer> getIntegersFromCommaInput(String input) {
+    return new ArrayList<>(Arrays.stream(input.split(",")).mapToInt(Integer::parseInt).boxed().toList());
+  }
+
+  public static long getFactorial(long f) {
+    if (f <= 1)
+      return 1;
+    return f * getFactorial(f - 1);
+  }
 }
