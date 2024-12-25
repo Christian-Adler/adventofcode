@@ -124,4 +124,17 @@ public class Util {
       return 1;
     return f * getFactorial(f - 1);
   }
+
+  public static <T> List<Pair<T, T>> buildPairs(Collection<T> collection) {
+    List<T> list = new ArrayList<>(collection);
+    List<Pair<T, T>> result = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      T item1 = list.get(i);
+      for (int j = i + 1; j < list.size(); j++) {
+        T item2 = list.get(j);
+        result.add(new Pair<>(item1, item2));
+      }
+    }
+    return result;
+  }
 }
