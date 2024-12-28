@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 
@@ -77,6 +80,27 @@ public class Img {
     ImageIO.write(img, "bmp", new File(path == null ? "./img.bmp" : path));
   }
 
+  public void writeSVGAged() throws IOException {
+    writeSVG(null, true);
+  }
+
+  public void writeSVG() throws IOException {
+    writeSVG(null, false);
+  }
+
+  public void writeSVG(String path, boolean aged) throws IOException {
+    Path filePath = Paths.get(path == null ? "./img.svg" : path);
+    String content;
+    if (aged)
+      content = toSVGStringAged();
+    else
+      content = toSVGString();
+    byte[] strToBytes = content.getBytes();
+
+    Files.write(filePath, strToBytes);
+  }
+
+
   public String toConsoleString() {
     Set<Vec> positions = getPaintPositions();
     List<List<String>> console = new ArrayList<>();
@@ -139,7 +163,7 @@ public class Img {
     return res.toString();
   }
 
-  String toSVGString() {
+  public String toSVGString() {
     Set<Vec> positions = getPaintPositions();
     StringBuilder res = new StringBuilder("\r\n");
 
