@@ -58,6 +58,14 @@ public class Vec {
     return addToNew(other.x, other.y);
   }
 
+  public Vec subToNew(int x, int y) {
+    return new Vec(this.x - x, this.y - y);
+  }
+
+  public Vec subToNew(Vec other) {
+    return subToNew(other.x, other.y);
+  }
+
   public Vec multToNew(int mult) {
     return new Vec(this.x * mult, this.y * mult);
   }
@@ -66,7 +74,7 @@ public class Vec {
     return new Vec(x, y, color);
   }
 
-  public boolean isInRect(int minX, int minY, int maxX, int maxY) {
+  public boolean isIn(int minX, int minY, int maxX, int maxY) {
     return x >= minX && x <= maxX && y >= minY && y <= maxY;
   }
 
@@ -87,7 +95,7 @@ public class Vec {
    * <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">...</a>
    */
   public int manhattanDistance() {
-    return Math.abs(x) + Math.abs(y);
+    return manhattanDistance(new Vec(0, 0));
   }
 
   public int manhattanDistance(Vec other) {
