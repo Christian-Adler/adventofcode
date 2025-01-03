@@ -20,12 +20,12 @@ public class Vec {
     adjacent8.addAll(adjacentDiagonal);
   }
 
-  public int x;
-  public int y;
+  public final int x;
+  public final int y;
   /**
    * color could be java.awt.Color or int or string
    */
-  public Object color = null;
+  public final Object color;
 
   public Vec(String input) {
     int[] arr = Arrays.stream(input.split(",")).mapToInt(Integer::parseInt).toArray();
@@ -33,46 +33,36 @@ public class Vec {
       throw new IllegalArgumentException("Unexpected input");
     x = arr[0];
     y = arr[1];
+    color = null;
   }
 
   public Vec(int x, int y) {
-    this.x = x;
-    this.y = y;
+    this(x, y, null);
   }
 
   public Vec(int x, int y, Object color) {
-    this(x, y);
+    this.x = x;
+    this.y = y;
     this.color = color;
-  }
-
-  public void add(Vec add) {
-    this.x += add.x;
-    this.y += add.y;
-  }
-
-  public Vec addToNew(int x, int y) {
-    return new Vec(this.x + x, this.y + y);
-  }
-
-  public Vec addToNew(Vec other) {
-    return addToNew(other.x, other.y);
-  }
-
-  public Vec subToNew(int x, int y) {
-    return new Vec(this.x - x, this.y - y);
-  }
-
-  public Vec subToNew(Vec other) {
-    return subToNew(other.x, other.y);
-  }
-
-  public Vec multToNew(int mult) {
-    return new Vec(this.x * mult, this.y * mult);
   }
 
   public Vec copy() {
     return new Vec(x, y, color);
   }
+
+
+  public Vec add(int x, int y) {
+    return new Vec(this.x + x, this.y + y);
+  }
+
+  public Vec add(Vec other) {
+    return add(other.x, other.y);
+  }
+
+  public Vec multiply(int val) {
+    return new Vec(this.x * val, this.y * val);
+  }
+
 
   public boolean isIn(int minX, int minY, int maxX, int maxY) {
     return x >= minX && x <= maxX && y >= minY && y <= maxY;
@@ -109,7 +99,7 @@ public class Vec {
     double yxStep = (double) (other.y - y) / maxDist;
 
     for (int i = 0; i <= maxDist; i++) {
-      Vec step = addToNew((int) (i * xStep), (int) (i * yxStep));
+      Vec step = add((int) (i * xStep), (int) (i * yxStep));
       if (!step.equals(this) && !step.equals(other))
         path.add(step);
     }
