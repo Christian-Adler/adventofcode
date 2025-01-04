@@ -102,13 +102,19 @@ public class Img {
 
 
   public String toConsoleString() {
+    return toConsoleString('.');
+  }
+
+  public String toConsoleString(Character background) {
+    String bg = String.valueOf(background);
+
     Set<Vec> positions = getPaintPositions();
     List<List<String>> console = new ArrayList<>();
     for (int y = 0; y <= yMax - yMin; y++) {
       List<String> row = new ArrayList<>();
       console.add(row);
       for (int x = 0; x <= xMax - xMin; x++) {
-        row.add(".");
+        row.add(bg);
       }
     }
 
