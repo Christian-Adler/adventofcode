@@ -63,6 +63,21 @@ public class Vec {
     return new Vec(this.x * val, this.y * val);
   }
 
+  public Vec withX(int x) {
+    return new Vec(x, this.y);
+  }
+
+  public Vec withX(Vec other) {
+    return withX(other.x);
+  }
+
+  public Vec withY(int y) {
+    return new Vec(this.x, y);
+  }
+
+  public Vec withY(Vec other) {
+    return withY(other.y);
+  }
 
   public boolean isIn(int minX, int minY, int maxX, int maxY) {
     return x >= minX && x <= maxX && y >= minY && y <= maxY;
