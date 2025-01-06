@@ -141,6 +141,14 @@ public class Vec {
     return "(" + x + "," + y + ')';
   }
 
+  public String toDirString() {
+    if (equals(Vec.DOWN)) return "v";
+    if (equals(Vec.UP)) return "^";
+    if (equals(Vec.RIGHT)) return ">";
+    if (equals(Vec.LEFT)) return "<";
+    return "?";
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o)
