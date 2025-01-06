@@ -36,6 +36,20 @@ public class Vec {
     color = null;
   }
 
+  /**
+   * @param input >, <, ^, v
+   * @return Vec
+   */
+  public static Vec parseDir(String input) {
+    return switch (input) {
+      case ">" -> Vec.RIGHT;
+      case "<" -> Vec.LEFT;
+      case "^" -> Vec.UP;
+      case "v" -> Vec.DOWN;
+      default -> throw new IllegalStateException("Unexpected value: " + input);
+    };
+  }
+
   public Vec(int x, int y) {
     this(x, y, null);
   }
