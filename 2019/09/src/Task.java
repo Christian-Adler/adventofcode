@@ -36,7 +36,7 @@ public class Task {
       else if (value == 10)
         builder.append("\r\n");
       else
-        builder.append(">");
+        builder.append(Character.toChars(Math.toIntExact(value)));
     });
     computer.exec();
     computer.join();
