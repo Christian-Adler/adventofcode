@@ -45,21 +45,30 @@ public class Img {
   }
 
   public void writeBitmap() throws IOException {
-    writeBitmap(null, false);
+    writeBitmap(1);
+  }
+
+  public void writeBitmap(int zoom) throws IOException {
+    writeBitmap(null, false, zoom);
   }
 
   public void writeBitmapAged() throws IOException {
-    writeBitmap(null, true);
+    writeBitmapAged(1);
   }
 
-  public void writeBitmap(String path, boolean aged) throws IOException {
+  public void writeBitmapAged(int zoom) throws IOException {
+    writeBitmap(null, true, zoom);
+  }
+
+  public void writeBitmap(String path, boolean aged, int zoom) throws IOException {
     Set<Vec> positions = getPaintPositions();
+    if (zoom < 1) throw new IllegalArgumentException("invalid zoom");
 
     int steps = Math.max(1, numPosWithoutColor);
-    int width = Math.max(xMax - xMin, 2);
-    int height = Math.max(yMax - yMin, 2);
+    int width = Math.max(xMax - xMin, 2) * zoom;
+    int height = Math.max(yMax - yMin, 2) * zoom;
     int count = 0;
-    BufferedImage img = new BufferedImage(width + 1, height + 1, BufferedImage.TYPE_INT_RGB);
+    BufferedImage img = new BufferedImage(width + /* 1* */ zoom, height + /* 1* */ zoom, BufferedImage.TYPE_INT_RGB);
     for (Vec vec : positions) {
       int yIdx = vec.y - this.yMin;
       int xIdx = vec.x - this.xMin;
@@ -75,7 +84,11 @@ public class Img {
         count++;
       }
 
-      img.setRGB(xIdx, yIdx, rgb);
+      for (int i = 0; i < zoom; i++) {
+        for (int j = 0; j < zoom; j++) {
+          img.setRGB(xIdx * zoom + i, yIdx * zoom + j, rgb);
+        }
+      }
     }
     ImageIO.write(img, "bmp", new File(path == null ? "./img.bmp" : path));
   }
