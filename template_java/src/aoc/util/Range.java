@@ -48,6 +48,12 @@ public record Range(long from, long to) {
     return null;
   }
 
+  public Range intersect(Range other) {
+    if (intersects(other))
+      return new Range(Math.max(from, other.from), Math.min(to, other.to));
+    return null;
+  }
+
 
   @Override
   public String toString() {
