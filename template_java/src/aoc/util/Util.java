@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Util {
   public static ArrayList<String> str2List(String input) {
@@ -117,6 +118,14 @@ public class Util {
 
   public static ArrayList<Integer> getIntegersFromCommaInput(String input) {
     return new ArrayList<>(Arrays.stream(input.split(",")).mapToInt(Integer::parseInt).boxed().toList());
+  }
+
+  public static List<Integer> convertToIntList(final List<String> input) {
+    return input.stream().map(Integer::parseInt).collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  public static List<Long> convertToLongList(final List<String> input) {
+    return input.stream().map(Long::parseLong).collect(Collectors.toCollection(ArrayList::new));
   }
 
   public static long getFactorial(long f) {

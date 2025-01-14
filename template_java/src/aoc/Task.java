@@ -1,21 +1,21 @@
 package aoc;
 
 import aoc.util.Img;
-import aoc.util.Util;
 
-public class Task {
+import java.util.List;
 
-  public void init() {
+public class Task extends TaskBase {
+  public static void main(String[] args) throws Exception {
+    runForInput("./input_example_1.txt");
+    // runForInput("./input.txt");
   }
 
-  public void addLine(String input) {
+  public String part1(List<String> lines) {
+    return null;
   }
 
-  public void afterParse() throws Exception {
-  }
-
-  public void out(Object... str) {
-    Util.out(str);
+  public String part2(List<String> lines) {
+    return null;
   }
 
   @Override
