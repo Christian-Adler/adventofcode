@@ -10,11 +10,11 @@ public class Task extends TaskBase {
     // runForInput("./input.txt");
   }
 
-  public String part1(List<String> lines) {
+  public String part1(List<String> lines) throws Exception {
     return null;
   }
 
-  public String part2(List<String> lines) {
+  public String part2(List<String> lines) throws Exception {
     return null;
   }
 
