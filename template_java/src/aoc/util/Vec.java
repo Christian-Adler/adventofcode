@@ -1,8 +1,11 @@
 package aoc.util;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
-public class Vec {
+public class Vec implements Comparable<Vec> {
+  public static final Vec ZERO = new Vec(0, 0);
+
   public static final Vec DOWN = new Vec(0, 1);
   public static final Vec UP = new Vec(0, -1);
   public static final Vec RIGHT = new Vec(1, 0);
@@ -162,5 +165,38 @@ public class Vec {
   @Override
   public int hashCode() {
     return Objects.hash(x, y);
+  }
+
+  @Override
+  public int compareTo(Vec other) {
+    int compare = Integer.compare(this.x, other.x);
+    if (compare != 0) return compare;
+    compare = Integer.compare(this.y, other.y);
+    if (compare != 0) return compare;
+    return 0;
+  }
+
+  /**
+   * For map parsing
+   *
+   * @param lines   input
+   * @param visitor called for every char in lines
+   * @return max x-y-Vec
+   */
+  public static Vec mapInputVisitor(List<String> lines, BiConsumer<Vec, String> visitor) {
+    int maxY = -1;
+    int maxX = -1;
+
+    for (String line : lines) {
+      maxY++;
+      maxX = line.length() - 1;
+      int x = -1;
+      for (String s : Util.str2List(line)) {
+        x++;
+        visitor.accept(new Vec(x, maxY), s);
+      }
+    }
+
+    return new Vec(maxX, maxY);
   }
 }
