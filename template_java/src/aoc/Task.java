@@ -4,17 +4,18 @@ import aoc.util.Img;
 
 import java.util.List;
 
+@SuppressWarnings({"unused", "RedundantThrows"})
 public class Task extends TaskBase {
   public static void main(String[] args) throws Exception {
     runForInput("./input_example_1.txt");
     // runForInput("./input.txt");
   }
 
-  public String part1(List<String> lines) throws Exception {
+  public String part1(List<String> lines, Object... params) throws Exception {
     return null;
   }
 
-  public String part2(List<String> lines) throws Exception {
+  public String part2(List<String> lines, Object... params) throws Exception {
     return null;
   }
 
