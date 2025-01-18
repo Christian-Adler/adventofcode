@@ -146,4 +146,20 @@ public class Util {
     }
     return result;
   }
+
+  public static <T> List<List<T>> buildTriples(Collection<T> collection) {
+    List<T> list = new ArrayList<>(collection);
+    List<List<T>> result = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      T item1 = list.get(i);
+      for (int j = i + 1; j < list.size(); j++) {
+        T item2 = list.get(j);
+        for (int k = j + 1; k < list.size(); k++) {
+          T item3 = list.get(k);
+          result.add(List.of(item1, item2, item3));
+        }
+      }
+    }
+    return result;
+  }
 }
