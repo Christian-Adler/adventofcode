@@ -1,12 +1,14 @@
 package aoc.util;
 
+import java.util.stream.LongStream;
+
 public record Range(long from, long to) {
 
   /**
-   * @param input - e.g. 10..12
+   * @param input - e.g. 10..12 or 10-12
    */
   public static Range parse(String input) {
-    String[] split = input.replace("..", ",").split(",");
+    String[] split = input.replace("..", ",").replace("-", ",").split(",");
     long from = Long.parseLong(split[0]);
     long to = Long.parseLong(split[1]);
     return new Range(from, to);
@@ -54,6 +56,9 @@ public record Range(long from, long to) {
     return null;
   }
 
+  public LongStream asStream() {
+    return LongStream.rangeClosed(from, to);
+  }
 
   @Override
   public String toString() {
