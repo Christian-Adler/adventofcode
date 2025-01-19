@@ -22,17 +22,8 @@ public abstract class TaskBase {
     Task task = new Task();
 
     Instant start = Instant.now();
-    String result = task.part1(lines, params);
+    task.exec(lines, params);
     Instant end = Instant.now();
-    out("Part 1:", result);
-    out("Duration:", Duration.between(start, end).toMillis(), "ms");
-
-    out();
-
-    start = Instant.now();
-    result = task.part2(lines, params);
-    end = Instant.now();
-    out("Part 2:", result);
     out("Duration:", Duration.between(start, end).toMillis(), "ms");
   }
 

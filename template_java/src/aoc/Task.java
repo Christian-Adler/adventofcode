@@ -11,12 +11,11 @@ public class Task extends TaskBase {
     // runForInput("./input.txt");
   }
 
-  public String part1(List<String> lines, Object... params) throws Exception {
-    return null;
-  }
+  public void exec(List<String> lines, Object... params) throws Exception {
+    
+    out("part 1: ");
 
-  public String part2(List<String> lines, Object... params) throws Exception {
-    return null;
+    out("part 2: ");
   }
 
   @Override
