@@ -2,6 +2,7 @@ package aoc.util;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Vec implements Comparable<Vec> {
   public static final Vec ZERO = new Vec(0, 0);
@@ -172,8 +173,7 @@ public class Vec implements Comparable<Vec> {
     int compare = Integer.compare(this.x, other.x);
     if (compare != 0) return compare;
     compare = Integer.compare(this.y, other.y);
-    if (compare != 0) return compare;
-    return 0;
+    return compare;
   }
 
   /**
@@ -198,5 +198,22 @@ public class Vec implements Comparable<Vec> {
     }
 
     return new Vec(maxX, maxY);
+  }
+
+  public static void xyVisitor(Vec v1, Consumer<Vec> visitor) {
+    xyVisitor(v1, Vec.ZERO, visitor);
+  }
+
+  public static void xyVisitor(Vec v1, Vec v2, Consumer<Vec> visitor) {
+    int maxY = Math.max(v1.y, v2.y);
+    int minY = Math.min(v1.y, v2.y);
+    int maxX = Math.max(v1.x, v2.x);
+    int minX = Math.min(v1.x, v2.x);
+
+    for (int y = minY; y <= maxY; y++) {
+      for (int x = minX; x <= maxX; x++) {
+        visitor.accept(new Vec(x, y));
+      }
+    }
   }
 }
