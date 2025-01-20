@@ -77,6 +77,14 @@ public class Vec implements Comparable<Vec> {
     return add(other.x, other.y);
   }
 
+  public Vec sub(int x, int y) {
+    return new Vec(this.x - x, this.y - y);
+  }
+
+  public Vec sub(Vec other) {
+    return sub(other.x, other.y);
+  }
+
   public Vec multiply(int val) {
     return new Vec(this.x * val, this.y * val);
   }
@@ -109,9 +117,9 @@ public class Vec implements Comparable<Vec> {
   @SuppressWarnings("SuspiciousNameCombination")
   public Vec rotate90DegToNew(boolean turnLeft) {
     if (turnLeft)
-      return new Vec(-y, x);
-    else
       return new Vec(y, -x);
+    else
+      return new Vec(-y, x);
   }
 
   /**
